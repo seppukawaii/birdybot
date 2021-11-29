@@ -1,0 +1,78 @@
+{
+  "any": {
+    "label": "any",
+    "cases": {
+      "subject": "they",
+      "object": "their",
+      "determiner": "their",
+      "possessive": "theirs",
+      "reflexive": "themself"
+    }
+  },
+  "she": {
+    "label": "she/her",
+    "pronouny": "https://pronouny.xyz/pronouns/56d7c7a1e7041e0e00335816",
+    "cases": {
+      "subject": "she",
+      "object": "her",
+      "determiner": "her",
+      "possessive": "hers",
+      "reflexive": "herself"
+    }
+  },
+  "he": {
+    "label": "he/him",
+    "pronouny": "https://pronouny.xyz/pronouns/56d90b55fcb6e80e00e70678",
+    "cases": {
+      "subject": "he",
+      "object": "him",
+      "determiner": "his",
+      "possessive": "his",
+      "reflexive": "himself"
+    }
+  },
+  "they": {
+    "label": "they/them",
+    "pronouny": "https://pronouny.xyz/pronouns/56d7c4008f53000e00d795d1",
+    "cases": {
+      "subject": "they",
+      "object": "their",
+      "determiner": "their",
+      "possessive": "theirs",
+      "reflexive": "themself"
+    }
+  },
+  "it": {
+    "label": "it/its",
+    "pronouny": "https://pronouny.xyz/pronouns/56ddb2bb6d09ce0e002f959d",
+    "cases": {
+      "subject": "it",
+      "object": "it",
+      "determiner": "its",
+      "possessive": "its",
+      "reflexive": "itself"
+    }
+  },
+  "e": {
+    "label": "e/em",
+    "pronouny": "https://pronouny.xyz/pronouns/593c12a4975dfa1000d4ec8a",
+    "cases": {
+      "subject": "e",
+      "object": "em",
+      "determiner": "eir",
+      "possessive": "eirs",
+      "reflexive": "emself"
+    }
+  },
+  "xs": {
+    "label": "xsie/xseirz",
+    "pronouny": "https://pronouny.xyz/pronouns/6172d91ef8b0590013969b45",
+    "cases": {
+      "subject": "xsie",
+      "object": "xsiem",
+      "determiner": "xsierz",
+      "possessive": "xsierz",
+      "reflexive": "xsiezself"
+    }
+  }
+}

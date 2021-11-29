@@ -1,0 +1,40 @@
+{
+  "name": "birdybot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "forever start --uid birdybot index.js",
+    "restart": "forever restart birdybot",
+    "update-data": "cd /var/www/squawkoverflow/public/data/ && cp -t ~/birdybot/data birds.json birdypets.json adjectives.json",
+    "logs": "cat ../.forever/birdybot.log"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "@google-cloud/datastore": "^6.5.0",
+    "@google-cloud/pubsub": "^2.18.1",
+    "@google-cloud/storage": "^5.14.0",
+    "axios": "^0.21.1",
+    "chance": "^1.1.7",
+    "cheerio": "^1.0.0-rc.10",
+    "color-name-list": "^8.26.0",
+    "csv-parser": "^3.0.0",
+    "discord.js": "13.3.1",
+    "emoji-name-map": "^1.2.9",
+    "emoji-unicode": "^2.0.1",
+    "flickr-sdk": "^3.10.0",
+    "fuse.js": "^6.4.6",
+    "google-auth-library": "^7.10.2",
+    "mime-types": "^2.1.32",
+    "natural": "^5.0.4",
+    "open-graph": "*",
+    "redis": "^3.1.2",
+    "sharp": "^0.29.1",
+    "short-uuid": "^4.2.0",
+    "stormdb": "^0.5.2",
+    "tumblr.js": "^3.0.0",
+    "tweetnacl": "^1.0.3"
+  }
+}

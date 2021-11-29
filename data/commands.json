@@ -1,0 +1,289 @@
+[{
+    "name": "hatch",
+    "description": "Hatch an egg to add a new BirdyPet to your aviary!",
+    "help": {
+      "group": "BirdyPets",
+      "description": "A virtual bird collecting game. https://squawkoverflow.com"
+    }
+  },
+  {
+    "name": "squawkoverflow",
+    "description": "A (virtual) bird collecting game",
+    "help": {
+      "group": "BirdyPets",
+      "description": ["A (virtual) bird collecting game.  https://squawkoverflow.com"]
+    },
+    "options": [{
+      "name": "aviary",
+      "description": "View a user's aviary",
+      "type": 1,
+      "options": [{
+        "name": "user",
+        "description": "Pick a user, any user!",
+        "type": 6,
+        "required": true
+      }]
+    }, {
+      "name": "gift",
+      "description": "Send a uesr a gift",
+      "type": 1,
+      "options": [{
+        "name": "user",
+        "description": "Pick a user, any user!",
+        "type": 6,
+        "required": true
+      }]
+    }, {
+      "name": "wishlist",
+      "description": "View a user's wishlist",
+      "type": 1,
+      "options": [{
+        "name": "user",
+        "description": "Pick a user, any user!",
+        "type": 6,
+        "required": true
+      }]
+    }]
+  },
+  {
+    "name": "play",
+    "description": "Play a bird game!",
+    "help": {
+      "group": "Games",
+      "description": "a work-in-progress"
+    }
+  },
+  {
+    "name": "View Aviary",
+    "type": 2
+  },
+  {
+    "name": "View Wishlist",
+    "type": 2
+  },
+  {
+    "name": "Send Gift",
+    "type": 2
+  },
+  {
+    "name": "Check Pronouns",
+    "type": 2
+  },
+  {
+    "name": "redeem",
+    "description": "Redeem special holiday currency for special holiday birds!"
+  },
+  {
+    "name": "help",
+    "description": "Information for all current Birdy commands",
+    "help": {
+      "group": "Server",
+      "description": [
+        " Prints out information for all current Birdy commands."
+      ]
+    }
+  }, {
+    "name": "role",
+    "description": "Choose your own role!",
+    "help": {
+      "group": "Server",
+      "description": [
+        "Change your role and/or color.",
+        "name  : The name of the role you want to use",
+        "color : Either a hex color or [one of the color names Discord provides](https://git.io/J0qzI)"
+      ]
+    },
+    "options": [{
+      "name": "name",
+      "description": "What do you want your role name to be?",
+      "type": 1,
+      "options": [{
+        "name": "name",
+        "description": "What do you want your role name to be?",
+        "type": 3,
+        "required": true
+      }]
+    }, {
+      "name": "color",
+      "description": "The color you want to use",
+      "type": 1,
+      "options": [{
+        "name": "color",
+        "description": "The color you want to use",
+        "type": 3,
+        "required": true
+      }]
+    }]
+  },
+  {
+    "name": "em",
+    "description": "Use animated Nitro emoji OR a mashup",
+    "help": {
+      "group": "Server",
+      "description": [
+        "Use animated Nitro emoji OR a mashup",
+        "emoji : The name of the emoji you want to use OR two emoji you want to mash together"
+      ]
+    },
+    "options": [{
+      "name": "emoji",
+      "description": "The name of the emoji you want to use OR two emoji to mash together",
+      "type": 3,
+      "required": true
+    }]
+  },
+  {
+    "name": "pronouns",
+    "description": "Set your preferred pronouns",
+    "help": {
+      "group": "Server",
+      "description": "Set your preferred pronouns"
+    },
+    "options": [{
+      "name": "set",
+      "description": "Set your preferred pronouns",
+      "type": 1
+    }, {
+      "name": "check",
+      "description": "Check a user's preferred pronouns",
+      "type": 1,
+      "options": [{
+        "name": "user",
+        "description": "The user you want to know better",
+        "type": 6,
+        "required": true
+      }]
+    }]
+  },
+  {
+    "name": "flickr",
+    "publicAck": true,
+    "description": "Summon a random bird pic from Flickr",
+    "help": {
+      "group": "BIRDS",
+      "description": "Pulls a random bird picture from Flickr."
+    }
+  },
+  {
+    "name": "bird",
+    "publicAck": true,
+    "description": "Summon a randomn bird from eBird",
+    "help": {
+      "group": "BIRDS",
+      "description": [
+        "Pulls a random bird from eBird.",
+        "taxonomy : *Optional* An order or family to limit the results to."
+      ]
+    },
+    "options": [{
+      "name": "taxonomy",
+      "description": "Specify an order or family to pull from",
+      "type": 3,
+      "required": false
+    }]
+  },
+  {
+    "name": "fact",
+    "publicAck": true,
+    "description": "Summon a random bird fact from eBird",
+    "help": {
+      "group": "BIRDS",
+      "description": [
+        "Pulls a random (and usually useless) bird fact from eBird.",
+        "taxonomy : *Optional* An order or family to limit the results to."
+      ]
+    },
+    "options": [{
+      "name": "taxonomy",
+      "description": "Specify an order or family to pull from",
+      "type": 3,
+      "required": "false"
+    }]
+  },
+  {
+    "name": "preview",
+    "publicAck": true,
+    "description": "Pull up a preview of a url that doesn't normally preview",
+    "help": {
+      "group": "Miscellaneous",
+      "description": [
+        "Displays a preview of a url that doesn't normally preview (e.g., macaulaylibrary.org)",
+        "url : The URL to display a preview of."
+      ]
+    },
+    "options": [{
+      "name": "url",
+      "description": "The URL to preview",
+      "type": 3,
+      "required": true
+    }]
+  },
+  {
+    "name": "submit",
+    "publicAck": true,
+    "description": "Submit to one of the Niche Bird Blogs",
+    "help": {
+      "group": "Niche Bird Blogs",
+      "description": [
+        "Submit a picture to one of the Niche Bird Blogs.",
+        "        url : The url to the image. Currently supported: macaulaylibrary.org, flickr.com, and danielslim.com.",
+        "speciescode : *Optional* The species code from eBird to identify the bird in the picture for websites other than macaulaylibrary.org. If not provided, the submission will go into drafts."
+      ]
+    },
+    "options": [],
+    "default_permission": false
+  },
+  {
+    "name": "fix",
+    "publicAck": true,
+    "description": "Fix a Niche Bird Blog post",
+    "help": {
+      "group": "Niche Bird Blogs",
+      "description": [
+        "Fix a species for a Niche Bird Blog post.",
+        "speciescode : The species code from eBird to identify the bird in the picture."
+      ]
+    },
+    "options": [{
+        "name": "photo",
+        "description": "Birdy Photo ID",
+        "type": 3,
+        "required": true
+      },
+      {
+        "name": "speciescode",
+        "description": "Species Code (ebird.org)",
+        "type": 3,
+        "required": true
+      }
+
+    ],
+    "default_permission": false
+  },
+  {
+    "name": "shuffle",
+    "publicAck": true,
+    "description": "Shuffle the queue for one of the Niche Bird Blogs",
+    "help": {
+      "group": "Niche Bird Blogs",
+      "description": [
+        "Shuffle the queue for one of the Niche Bird Blogs."
+      ]
+    },
+    "options": [],
+    "default_permission": false
+  },
+  {
+    "name": "remove",
+    "publicAck": true,
+    "description": "Remove a photo from one of the Niche Bird Blogs",
+    "help": {
+      "group": "Niche Bird Blogs",
+      "description": [
+        "Remove a photo from one of the Niche Bird Blogs."
+      ]
+    },
+    "options": [],
+    "default_permission": false
+  }
+]
