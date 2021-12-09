@@ -20,7 +20,7 @@ const webhookClient = new WebhookClient({
 
 async function listen() {
     const formattedSubscription = subClient.subscriptionPath(
-      process.env.GCP_PROJECT,
+	    'squawkoverflow',
       'egg-hatchery'
     );
 

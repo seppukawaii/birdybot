@@ -1,4 +1,4 @@
-const Members = require('/var/www/squawkoverflow/helpers/members.js');
+//const Members = require('/var/www/squawkoverflow/api/collections/members.js');
 
 const secrets = require('./secrets.json');
 const commands = require('./data/commands.json');
@@ -69,14 +69,16 @@ client.on('messageCreate', (message) => {
   }
 });
 
+/*
 client.on('guildMemberUpdate', (oldData, newData) => {
   if (oldData.displayName != newData.displayName || oldData.avatar != newData.avatar) {
-    Members.set(newData.id, {
+    Members.get(newData.id).set({
       'username': newData.displayName,
       'avatar': `https://cdn.discordapp.com/avatars/${newData.id}/${newData.avatar}.webp`
     });
   }
 });
+*/
 
 client.on('error', (err) => {
   console.error(err);

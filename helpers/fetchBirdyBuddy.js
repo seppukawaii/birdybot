@@ -1,6 +1,3 @@
-const Redis = require('./redis.js');
-const BirdyPets = require('/var/www/squawkoverflow/helpers/birdypets.js');
-
 module.exports = function(memberId) {
 return new Promise(async (resolve, reject) => {
   var member = await Redis.get('member', memberId);

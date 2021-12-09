@@ -46,6 +46,28 @@
     }]
   },
   {
+    "name": "bug",
+    "description": "Submit a bug report",
+    "publicAck": true,
+    "options": [{
+      "name": "report",
+      "description": "What happened?",
+      "type": 3,
+      "required": true
+    }]
+  },
+  {
+    "name": "idea",
+    "description": "Submit an idea",
+    "publicAck": true,
+    "options": [{
+      "name": "idea",
+      "description": "What's your idea?",
+      "type": 3,
+      "required": true
+    }]
+  },
+  {
     "name": "play",
     "description": "Play a bird game!",
     "help": {

@@ -1,10 +1,14 @@
-const BirdyPets = require('/var/www/squawkoverflow/helpers/birdypets.js');
-const Members = require('/var/www/squawkoverflow/helpers/members.js');
-const Secrets = require('../secrets.json');
-const Helpers = require('../helpers.js');
+const API = require('../helpers/api.js');
 
 module.exports = async function(message) {
+  var members = message.mentions.members.map((member) => member.id);
   var embeds = [];
+  var regex = /\`([^\`]+)\`/;
+  var value = null;
+
+  try {
+    value = message.content.match(regex)[1];
+  } catch (err) {}
 
   if (message.content.includes('bug')) {
     var bugs = [
@@ -12,21 +16,27 @@ module.exports = async function(message) {
       "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/openmoji/292/ant_1f41c.png",
       "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/openmoji/292/beetle_1fab2.png",
       "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/openmoji/292/lady-beetle_1f41e.png",
-      "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/openmoji/292/cricket_1f997.png"
+      "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/openmoji/292/cricket_1f997.png",
+      "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/openmoji/292/mosquito_1f99f.png"
     ];
 
-    message.mentions.members.each((member) => {
-	    Members.get(member.id).then( (member) => {
-		    Members.set(member._id, { bugs : member.bugs + 1 });
-	    });
+    API.call('bug', 'PUT', {
+      members: members,
+      bugs: value ? value : 1
+    });
 
-      embeds.push({
-        title: "A bug!!",
-        description: `<@${member.id}> found a bug!`,
-        thumbnail: {
-          url: Helpers.Chance.pickone(bugs)
-        }
-      });
+    members = members.map((member) => `<@${member}>`);
+
+    if (members.length > 1) {
+      members[members.length - 1] = 'and ' + members[members.length - 1];
+    }
+
+    embeds.push({
+      title: "A bug!!",
+      description: `${members.join(', ')} found a bug!`,
+      thumbnail: {
+        url: bugs.sort(() => .5 - Math.random())[0]
+      }
     });
 
     message.reply({
@@ -35,42 +45,36 @@ module.exports = async function(message) {
     });
   } else if (message.content.includes('bird')) {
     try {
-      var regex = /\`([^\`]+)\`/;
-      var birdypet = BirdyPets.findBy('prefix-alias', message.content.match(regex)[1]);
-
-      if (birdypet.length > 0) {
-        birdypet = birdypet[0];
+      API.call('illustration', 'GET', {
+        id: value
+      }).then(async (illustration) => {
 
         for (var [id, member] of message.mentions.members) {
-          var key = await Helpers.Database.save('memberpet', null, {
-            member: member.id,
-            birdypetId: birdypet.id,
-            birdypetSpecies: birdypet.species.speciesCode,
-            species: birdypet.species.commonName,
-            family: birdypet.species.family,
-            hatchedAt: Date.now()
-          });
+          API.call('collect', 'POST', {
+		  loggedInUser: member.id,
+		  illustration: illustration.id
+	  });
+	}
+
+    members = members.map((member) => `<@${member}>`);
+
+    if (members.length > 1) {
+      members[members.length - 1] = 'and ' + members[members.length - 1];
+    }
 
           embeds.push({
-            title: birdypet.species.commonName,
-            author: {
-              name: member.displayName,
-              icon_url: member.user.avatarURL()
-            },
-            description: `${birdypet.version || ""} ${birdypet.label || ""}`,
-            url: `https://squawkoverflow.com/birdypet/${key}`,
+            title: illustration.bird.name,
+            description: illustration.label || " ",
+            url: `https://squawkoverflow.com/birdypedia/bird/${illustration.bird.code}`,
             thumbnail: {
-              url: `https://storage.googleapis.com/birdypets/${birdypet.species.order}/${birdypet.species.family}/${birdypet.species.scientificName.replace(' ', '%20')}/${birdypet.id}.${birdypet.filetype ? birdypet.filetype : "jpg"}`
+              url: illustration.image
             }
           });
-        }
-      } else {
-        throw 404;
-      }
 
       message.reply({
-        content: "You get a bird!!",
+	      content: `${members.join(', ')} get${members.length == 1 ? 's' : ''} a bird!`,
         embeds: embeds
+      });
       });
     } catch (err) {
       console.log(err);

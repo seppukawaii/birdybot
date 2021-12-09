@@ -48,7 +48,7 @@ client.on('ready', () => {
                   },
                   footer: {
                     text: "⠀",
-                    icon_url: `https://example.com/?${birdypet.ackId}`
+                    icon_url: `https://example.com/?${birdypet.freebirdId}`
                   }
                 }],
                 components: [{

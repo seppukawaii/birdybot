@@ -5,7 +5,6 @@ const StormDB = require('stormdb');
 
 module.exports = {
   Chance: Chance,
-  Database: require('./helpers/redis.js'),
   Games: require('./helpers/games.js'),
 
   clearMessages: async function(channel) {
@@ -47,17 +46,14 @@ module.exports = {
     }
   },
 
-  Birds: require('/var/www/squawkoverflow/helpers/birds.js'),
-  BirdyPets: require('/var/www/squawkoverflow/helpers/birdypets.js'),
-
-  fetchBirdBy: require('./helpers/fetchBirdBy'),
+//  fetchBirdBy: require('./helpers/fetchBirdBy'),
   fetchBirdPhoto: require('./helpers/fetchBirdPhoto'),
   fetchBirdBlog: require('./helpers/fetchBirdBlog'),
   saveBirdPhoto: require('./helpers/saveBirdPhoto'),
-  fetchBirdyBuddy: require('./helpers/fetchBirdyBuddy'),
-  birdyBuddyFriendship: require('./helpers/birdyBuddyFriendship'),
+//  fetchBirdyBuddy: require('./helpers/fetchBirdyBuddy'),
+//  birdyBuddyFriendship: require('./helpers/birdyBuddyFriendship'),
 
-  pronouns: async function(member, pronounCase) {
+  pronouns: function(member, pronounCase) {
     var pronouns = require('./data/pronouns.json');
 
     try {
@@ -66,7 +62,6 @@ module.exports = {
           return pronouns[key].cases[pronounCase];
         }
       }
-
     } catch (err) {
 	    console.log(err);
     }

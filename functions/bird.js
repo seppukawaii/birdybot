@@ -1,4 +1,4 @@
-const Helpers = require('../helpers.js');
+const Birds = require('/var/www/squawkoverflow/api/collections/birds.js');
 const opengraph = require('open-graph');
 
 module.exports = function(interaction) {
