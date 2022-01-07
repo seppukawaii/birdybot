@@ -27,39 +27,26 @@ module.exports = async function(interaction) {
         loggedInUser: interaction.user.id,
         illustration: illustration,
         adjective: eggy.split(' ')[1]
-      }).then(async (memberpet) => {
-
-        interaction.editReply({
-          content: ":heart:",
-          embeds: [],
-          components: []
-        }).then(() => {
-          if (interaction.member) {
-            interaction.channel.send({
-              content: " ",
-              embeds: [{
-                title: memberpet.species.commonName,
-                description: `<@${memberId}> hatched ${eggy}!`,
-                image: {
-                  url: memberpet.image
-                },
-                url: memberpet.id ? `https://squawkoverflow.com/birdypet/${memberpet.id}` : ""
-              }]
-            });
-          } else {
-            interaction.followUp({
-              content: " ",
-              embeds: [{
-                title: memberpet.species.commonName,
-                description: `You hatched ${eggy}!`,
-                image: {
-                  url: memberpet.image
-                },
-                url: memberpet.id ? `https://squawkoverflow.com/birdypet/${memberpet.id}` : ""
-              }]
-            });
-          }
-        });
+      }).then(async (birdypet) => {
+        if (interaction.member) {
+          interaction.editReply({
+            content: `:heart: <https://squawkoverflow.com/birdypet/${birdypet.id}>`,
+            embeds: [],
+            components: []
+          });
+        } else {
+          interaction.followUp({
+            content: " ",
+            embeds: [{
+              title: birdypet.illustration.bird.name,
+              description: `You hatched ${eggy}!`,
+              image: {
+                url: birdypet.illustration.image
+              },
+              url: birdypet.id ? `https://squawkoverflow.com/birdypet/${birdypet.id}` : ""
+            }]
+          });
+        }
       });
       break;
     case "release":
@@ -76,21 +63,11 @@ module.exports = async function(interaction) {
 
       break;
     case "catch":
-      var freebirdId = interaction.message.embeds[0].footer.iconURL.split('?').pop();
-
       API.call('collect', "POST", {
         loggedInUser: interaction.user.id,
         illustration: illustration,
-        freebird: freebirdId
-      }).then(async (memberpet) => {
-        var embeds = [
-          new MessageEmbed()
-          .setTitle(memberpet.species.commonName)
-          .setDescription(`${memberpet.label || " "}`)
-          .setURL(`https://squawkoverflow.com/birdypet/${memberpet.id}`)
-          .setThumbnail(memberpet.image)
-        ];
-
+        freebird: true
+      }).then(async (birdypet) => {
         interaction.message.delete();
 
         var member = await API.call('member', 'GET', {
@@ -99,12 +76,21 @@ module.exports = async function(interaction) {
 
         var pronoun = member && member.pronouns ? Helpers.pronouns(member, 'determiner') : 'their';
 
+        var embeds = [{
+          title: birdypet.illustration.bird.name,
+          description: birdypet.illustration.label || " ",
+          image: {
+            url: birdypet.illustration.image
+          },
+          url: `https://squawkoverflow.com/birdypet/${birdypet.id}`
+        }];
+
         interaction.channel.send({
-          content: `${interaction.member.displayName} excitedly adds the ${memberpet.species.commonName} to ${pronoun} aviary!`,
+          content: `${interaction.member.displayName} excitedly adds the ${birdypet.illustration.bird.name} to ${pronoun} aviary!`,
           embeds: embeds
         }).then((message) => {
           message.edit({
-            content: `<@${memberId}> excitedly adds the ${memberpet.species.commonName} to ${pronoun} aviary!`,
+            content: `<@${memberId}> excitedly adds the ${birdypet.illustration.bird.name} to ${pronoun} aviary!`,
             embeds: embeds
           });
 
@@ -112,20 +98,16 @@ module.exports = async function(interaction) {
             API.call('freebirds', 'GET', {
               limit: 1
             }).then(async (response) => {
-              let birdypet = response.results[0];
+              let illustration = response.results[0];
 
               message.edit({
                 content: require('../data/webhooks.json').release.sort(() => .5 - Math.random())[0],
                 embeds: [{
-                  title: birdypet.species.commonName,
-                  url: `https://squawkoverflow.com/birdypedia/bird/${birdypet.species.speciesCode}`,
-                  description: birdypet.label,
+                  title: illustration.bird.name,
+                  url: `https://squawkoverflow.com/birdypedia/bird/${illustration.bird.code}`,
+                  description: illustration.label,
                   image: {
-                    url: birdypet.image
-                  },
-                  footer: {
-                    text: "⠀",
-                    icon_url: `https://example.com/?${birdypet.freebirdId}`
+                    url: illustration.image
                   }
                 }],
                 components: [{
@@ -134,7 +116,7 @@ module.exports = async function(interaction) {
                     type: 2,
                     label: 'Add to Aviary!',
                     style: 1,
-                    custom_id: `birdypets_catch-${birdypet.id}`,
+                    custom_id: `birdypets_catch`,
                   }]
                 }]
               });

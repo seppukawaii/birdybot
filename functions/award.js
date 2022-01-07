@@ -51,30 +51,30 @@ module.exports = async function(message) {
 
         for (var [id, member] of message.mentions.members) {
           API.call('collect', 'POST', {
-		  loggedInUser: member.id,
-		  illustration: illustration.id
-	  });
-	}
-
-    members = members.map((member) => `<@${member}>`);
-
-    if (members.length > 1) {
-      members[members.length - 1] = 'and ' + members[members.length - 1];
-    }
-
-          embeds.push({
-            title: illustration.bird.name,
-            description: illustration.label || " ",
-            url: `https://squawkoverflow.com/birdypedia/bird/${illustration.bird.code}`,
-            thumbnail: {
-              url: illustration.image
-            }
+            loggedInUser: member.id,
+            illustration: illustration.id
           });
+        }
 
-      message.reply({
-	      content: `${members.join(', ')} get${members.length == 1 ? 's' : ''} a bird!`,
-        embeds: embeds
-      });
+        members = members.map((member) => `<@${member}>`);
+
+        if (members.length > 1) {
+          members[members.length - 1] = 'and ' + members[members.length - 1];
+        }
+
+        embeds.push({
+          title: illustration.bird.name,
+          description: illustration.label || " ",
+          url: `https://squawkoverflow.com/birdypedia/bird/${illustration.bird.code}`,
+          thumbnail: {
+            url: illustration.image
+          }
+        });
+
+        message.reply({
+          content: `${members.join(', ')} get${members.length == 1 ? 's' : ''} a bird!`,
+          embeds: embeds
+        });
       });
     } catch (err) {
       console.log(err);

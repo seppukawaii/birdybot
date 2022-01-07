@@ -1,7 +1,6 @@
 const API = require('../helpers/api.js');
 
 const secrets = require('../secrets.json');
-const helpers = require('../helpers.js');
 
 const {
   Client,
@@ -40,15 +39,11 @@ client.on('ready', () => {
               webhookClient.send({
                 content: require('../data/webhooks.json').release.sort(() => .5 - Math.random())[0],
                 embeds: [{
-                  title: birdypet.species.commonName,
-                  url: `https://squawkoverflow.com/birdypedia/bird/${birdypet.species.speciesCode}`,
+                  title: birdypet.bird.name,
+                  url: `https://squawkoverflow.com/birdypedia/bird/${birdypet.bird.code}`,
                   description: birdypet.label,
                   image: {
-                    url: birdypet.image
-                  },
-                  footer: {
-                    text: "⠀",
-                    icon_url: `https://example.com/?${birdypet.freebirdId}`
+                    url: birdypet.image + '#' + birdypet.freebirdId
                   }
                 }],
                 components: [{
@@ -57,7 +52,7 @@ client.on('ready', () => {
                     type: 2,
                     label: 'Add to Aviary!',
                     style: 1,
-                    custom_id: `birdypets_catch-${birdypet.id}`,
+                    custom_id: `birdypets_catch`,
                   }]
                 }]
               }).then(() => {

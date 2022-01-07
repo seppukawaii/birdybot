@@ -1,5 +1,6 @@
-const Birds = require('/var/www/squawkoverflow/api/collections/birds.js');
 const opengraph = require('open-graph');
+
+const Birds = require('/var/www/squawkoverflow/api/collections/birds.js');
 
 module.exports = function(interaction) {
   var taxonomy = interaction.options.getString('taxonomy');
@@ -11,18 +12,18 @@ module.exports = function(interaction) {
 
   if (taxonomy) {
     do {
-      var birds = Helpers.Birds.fetch(fields[i], taxonomy);
+      var birds = Birds.fetch(fields[i], taxonomy);
     }
     while (birds.length == 0 && ++i < fields.length);
 
     if (birds.length == 0) {
       response.content = `I couldn't find any matches for \`${taxonomy}\`, so here's a totally random bird.\r\n\r\n`;
-      var bird = Helpers.randomBird();
+      var bird = Birds.random();
     } else {
-      var bird = Helpers.Chance.pickone(birds);
+      var bird = birds.sort(() => .5 - Math.random())[0];
     }
   } else {
-    var bird = Helpers.randomBird();
+    var bird = Birds.random();
   }
 
   opengraph(`https://ebird.org/species/${bird.speciesCode}`, (err, meta) => {
