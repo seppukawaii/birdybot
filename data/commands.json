@@ -4,7 +4,8 @@
     "help": {
       "group": "BirdyPets",
       "description": "A virtual bird collecting game. https://squawkoverflow.com"
-    }
+    },
+    "global": true
   },
   {
     "name": "squawkoverflow",
@@ -43,7 +44,8 @@
         "type": 6,
         "required": true
       }]
-    }]
+    }],
+    "global": true
   },
   {
     "name": "bug",
@@ -54,7 +56,8 @@
       "description": "What happened?",
       "type": 3,
       "required": true
-    }]
+    }],
+    "global": false
   },
   {
     "name": "idea",
@@ -65,7 +68,8 @@
       "description": "What's your idea?",
       "type": 3,
       "required": true
-    }]
+    }],
+    "global": false
   },
   {
     "name": "play",
@@ -73,27 +77,33 @@
     "help": {
       "group": "Games",
       "description": "a work-in-progress"
-    }
+    },
+    "global": true
   },
   {
     "name": "View Aviary",
-    "type": 2
+    "type": 2,
+    "global": false
   },
   {
     "name": "View Wishlist",
-    "type": 2
+    "type": 2,
+    "global": false
   },
   {
     "name": "Send Gift",
-    "type": 2
+    "type": 2,
+    "global": false
   },
   {
     "name": "Check Pronouns",
-    "type": 2
+    "type": 2,
+    "global": false
   },
   {
     "name": "redeem",
-    "description": "Redeem special holiday currency for special holiday birds!"
+    "description": "Redeem special holiday currency for special holiday birds!",
+    "global": false
   },
   {
     "name": "help",
@@ -103,7 +113,8 @@
       "description": [
         " Prints out information for all current Birdy commands."
       ]
-    }
+    },
+    "global": false
   }, {
     "name": "role",
     "description": "Choose your own role!",
@@ -135,7 +146,8 @@
         "type": 3,
         "required": true
       }]
-    }]
+    }],
+    "global": false
   },
   {
     "name": "em",
@@ -152,7 +164,8 @@
       "description": "The name of the emoji you want to use OR two emoji to mash together",
       "type": 3,
       "required": true
-    }]
+    }],
+    "global": false
   },
   {
     "name": "pronouns",
@@ -175,7 +188,8 @@
         "type": 6,
         "required": true
       }]
-    }]
+    }],
+    "global": false
   },
   {
     "name": "flickr",
@@ -184,7 +198,8 @@
     "help": {
       "group": "BIRDS",
       "description": "Pulls a random bird picture from Flickr."
-    }
+    },
+    "global": true
   },
   {
     "name": "bird",
@@ -202,7 +217,8 @@
       "description": "Specify an order or family to pull from",
       "type": 3,
       "required": false
-    }]
+    }],
+    "global": true
   },
   {
     "name": "fact",
@@ -220,7 +236,8 @@
       "description": "Specify an order or family to pull from",
       "type": 3,
       "required": "false"
-    }]
+    }],
+    "global": true
   },
   {
     "name": "preview",
@@ -238,7 +255,8 @@
       "description": "The URL to preview",
       "type": 3,
       "required": true
-    }]
+    }],
+    "global": true
   },
   {
     "name": "submit",
@@ -253,7 +271,8 @@
       ]
     },
     "options": [],
-    "default_permission": false
+    "default_permission": false,
+    "global": false
   },
   {
     "name": "fix",
@@ -280,7 +299,8 @@
       }
 
     ],
-    "default_permission": false
+    "default_permission": false,
+    "global": false
   },
   {
     "name": "shuffle",
@@ -293,7 +313,8 @@
       ]
     },
     "options": [],
-    "default_permission": false
+    "default_permission": false,
+    "global": false
   },
   {
     "name": "remove",
@@ -306,6 +327,7 @@
       ]
     },
     "options": [],
-    "default_permission": false
+    "default_permission": false,
+    "global": false
   }
 ]

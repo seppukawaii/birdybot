@@ -1,21 +1,22 @@
-const axios = require('axios');
 const secrets = require('../secrets.json');
-const natural = require('natural');
-const tokenizer = new natural.SentenceTokenizer();
+const commands = require('../data/commands.json');
 
-const commands = require('../commands.json').map((command) => {
-  delete command.help;
-  return command;
-});
+const {
+  REST
+} = require('@discordjs/rest');
 
-const headers = {
-  headers: {
-    "Authorization": `Bot ${secrets.BOT_TOKEN}`
-  }
-};
+const {
+  Routes
+} = require('discord-api-types/v9');
 
-const guildId = "863864246835216464";
+const rest = new REST({
+  version: '9'
+}).setToken(secrets.DISCORD.BOT_TOKEN);
 
+var birdBlogCommands = ["submit", "shuffle", "remove", "fix"];
+var serverCommands = commands.filter((command) => !command.global && !birdBlogCommands.includes(command.name));
+
+var birdBlogLetters = {};
 var birdBlogs = [
   "allblackbirds",
   "baby-bird-beaks",
@@ -53,10 +54,8 @@ var birdBlogs = [
   "sunbird-haven",
   "ready-red-birds",
   "shrike-is-love-shrike-is-life",
-	"eye-see-a-bird"
+  "eye-see-a-bird"
 ];
-var birdBlogCommands = [];
-var birdBlogLetters = {};
 
 birdBlogs.forEach((blog) => {
   let firstLetter = blog.slice(0, 1);
@@ -113,39 +112,56 @@ for (let commandName of ["submit", "shuffle", "remove"]) {
         break;
     }
 
-    birdBlogCommands.push(command);
+    serverCommands.push(command);
   }
 }
 
-birdBlogCommands.push(commands.find((command) => command.name == "fix"));
+serverCommands.push(commands.find((command) => command.name == "fix"));
 
+try {
+  console.log('Started refreshing application commands.');
+
+  rest.put(
+    Routes.applicationGuildCommands(secrets.DISCORD.APPLICATION_ID, secrets.DISCORD.GUILD_ID), {
+      body: serverCommands
+    },
+  );
+
+  console.log('Successfully reloaded application commands.');
+} catch (error) {
+  console.error(error);
+}
+
+/*
 axios.put(
-    `https://discord.com/api/v8/applications/${secrets.APPLICATION_ID}/guilds/${guildId}/commands`,
-    birdBlogCommands,
+    `https://discord.com/api/v8/applications/${secrets.DISCORD.APPLICATION_ID}/guilds/${secrets.DISCORD.GUILD_ID}/commands`,
+    serverCommands,
     headers
   ).then(async (response) => {
     for (let i = 0, len = response.data.length; i < len; i++) {
       var command = response.data[i];
 
-      console.log("Updating permissions for ", command.name);
+      if (birdBlogCommands.includes(command.name)) {
+        console.log("Updating permissions for ", command.name);
 
-      await Promise.all([
-        axios.put(
-          `https://discord.com/api/v8/applications/${secrets.APPLICATION_ID}/guilds/${guildId}/commands/${command.id}/permissions`, {
-            "permissions": [{
-              "id": "864147373788889109",
-              "type": 1,
-              "permission": true
-            }]
-          },
-          headers
-        ).catch((err) => {
-          console.log(err);
-        }),
-        new Promise((resolve, reject) => {
-          setTimeout(resolve, 5000);
-        })
-      ]);
+        await Promise.all([
+          axios.put(
+            `https://discord.com/api/v8/applications/${secrets.DISCORD.APPLICATION_ID}/guilds/${secrets.DISCORD.GUILD_ID}/commands/${command.id}/permissions`, {
+              "permissions": [{
+                "id": "864147373788889109",
+                "type": 1,
+                "permission": true
+              }]
+            },
+            headers
+          ).catch((err) => {
+            console.log(err);
+          }),
+          new Promise((resolve, reject) => {
+            setTimeout(resolve, 5000);
+          })
+        ]);
+      }
     }
   })
   .catch((err) => {
@@ -153,3 +169,4 @@ axios.put(
       depth: 10
     });
   });
+*/

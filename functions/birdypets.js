@@ -17,7 +17,7 @@ const subClient = new v1.SubscriberClient();
 module.exports = async function(interaction) {
   const memberId = interaction.user.id;
   const action = interaction.customId;
-  const illustration = interaction.message.embeds[0].image?.url.split('/').pop().split('.').shift();
+  const variant = interaction.message.embeds[0].image?.url.split('/').pop().split('.').shift();
 
   switch (action) {
     case "keep":
@@ -25,7 +25,7 @@ module.exports = async function(interaction) {
 
       API.call('collect', "POST", {
         loggedInUser: interaction.user.id,
-        illustration: illustration,
+        variant: variant,
         adjective: eggy.split(' ')[1]
       }).then(async (birdypet) => {
         if (interaction.member) {
@@ -38,10 +38,10 @@ module.exports = async function(interaction) {
           interaction.followUp({
             content: " ",
             embeds: [{
-              title: birdypet.illustration.bird.name,
+              title: birdypet.bird.commonName,
               description: `You hatched ${eggy}!`,
               image: {
-                url: birdypet.illustration.image
+                url: birdypet.variant.image
               },
               url: birdypet.id ? `https://squawkoverflow.com/birdypet/${birdypet.id}` : ""
             }]
@@ -58,15 +58,16 @@ module.exports = async function(interaction) {
 
       API.call('release', 'POST', {
         loggedInUser: memberId,
-        illustration: illustration
+        variant: variant
       });
 
       break;
     case "catch":
+      let freebird = interaction.message.embeds[0].image?.url.split('#').pop();
+
       API.call('collect', "POST", {
         loggedInUser: interaction.user.id,
-        illustration: illustration,
-        freebird: true
+        freebird: freebird
       }).then(async (birdypet) => {
         interaction.message.delete();
 
@@ -77,20 +78,20 @@ module.exports = async function(interaction) {
         var pronoun = member && member.pronouns ? Helpers.pronouns(member, 'determiner') : 'their';
 
         var embeds = [{
-          title: birdypet.illustration.bird.name,
-          description: birdypet.illustration.label || " ",
+          title: birdypet.variant.bird.commonName,
+          description: birdypet.variant.label || " ",
           image: {
-            url: birdypet.illustration.image
+            url: birdypet.variant.image
           },
           url: `https://squawkoverflow.com/birdypet/${birdypet.id}`
         }];
 
         interaction.channel.send({
-          content: `${interaction.member.displayName} excitedly adds the ${birdypet.illustration.bird.name} to ${pronoun} aviary!`,
+          content: `${interaction.member.displayName} excitedly adds the ${birdypet.variant.bird.commonName} to ${pronoun} aviary!`,
           embeds: embeds
         }).then((message) => {
           message.edit({
-            content: `<@${memberId}> excitedly adds the ${birdypet.illustration.bird.name} to ${pronoun} aviary!`,
+            content: `<@${memberId}> excitedly adds the ${birdypet.variant.bird.commonName} to ${pronoun} aviary!`,
             embeds: embeds
           });
 
@@ -98,16 +99,16 @@ module.exports = async function(interaction) {
             API.call('freebirds', 'GET', {
               limit: 1
             }).then(async (response) => {
-              let illustration = response.results[0];
+              let result = response.results[0];
 
               message.edit({
                 content: require('../data/webhooks.json').release.sort(() => .5 - Math.random())[0],
                 embeds: [{
-                  title: illustration.bird.name,
-                  url: `https://squawkoverflow.com/birdypedia/bird/${illustration.bird.code}`,
-                  description: illustration.label,
+                  title: result.bird.commonName,
+                  url: `https://squawkoverflow.com/birdypedia/bird/${result.bird.code}`,
+                  description: result.label,
                   image: {
-                    url: illustration.image
+                    url: result.image + '#' + result.freebird
                   }
                 }],
                 components: [{

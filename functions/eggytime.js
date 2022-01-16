@@ -9,10 +9,10 @@ module.exports = async function(interaction) {
     egg: egg
   }).then(async (birdypet) => {
     interaction.editReply({
-      content: `You hatched the ${egg} egg to discover the **${birdypet.bird.name}** inside!  Do you want to keep it or release it into the wild?`,
+      content: `You hatched the ${egg} egg to discover the **${birdypet.bird.commonName}** inside!  Do you want to keep it or release it into the wild?`,
       ephemeral: true,
       "embeds": [{
-        "title": birdypet.bird.name,
+        "title": birdypet.bird.commonName,
         "url": `https://squawkoverflow.com/birdypedia/bird/${birdypet.bird.code}`,
         "description": `${birdypet.version || ""} ${birdypet.label || ""}`,
         "image": {

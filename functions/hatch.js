@@ -14,9 +14,9 @@ module.exports = async function(interaction) {
           components: eggs.map((egg) => {
             return {
               type: 2,
-              label: `${egg.name} egg`,
+              label: `${egg.adjective} egg`,
               style: 2,
-              custom_id: `eggytime_${egg.name}`,
+              custom_id: `eggytime_${egg.adjective}`,
               emoji: egg.icon ? {
                 id: egg.icon
               } : {

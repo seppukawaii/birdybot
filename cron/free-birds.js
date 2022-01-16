@@ -32,6 +32,8 @@ client.on('ready', () => {
         }).then(async (response) => {
           let freebirds = response.results;
 
+		console.log(freebirds);
+
           for (var i = 0, len = freebirds.length; i < len; i++) {
             await new Promise((resolve, reject) => {
               let birdypet = freebirds[i];
@@ -39,11 +41,11 @@ client.on('ready', () => {
               webhookClient.send({
                 content: require('../data/webhooks.json').release.sort(() => .5 - Math.random())[0],
                 embeds: [{
-                  title: birdypet.bird.name,
+                  title: birdypet.bird.commonName,
                   url: `https://squawkoverflow.com/birdypedia/bird/${birdypet.bird.code}`,
                   description: birdypet.label,
                   image: {
-                    url: birdypet.image + '#' + birdypet.freebirdId
+                    url: birdypet.image + '#' + birdypet.freebird
                   }
                 }],
                 components: [{

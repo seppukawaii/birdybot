@@ -16,11 +16,9 @@ const rest = new REST({
 try {
   console.log('Started refreshing application commands.');
 
-	console.log(commands);
-
   rest.put(
     Routes.applicationCommands(secrets.DISCORD.APPLICATION_ID), {
-      body: commands
+      body: commands.filter((command) => command.global)
     },
   );
 
