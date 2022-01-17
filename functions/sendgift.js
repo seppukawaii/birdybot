@@ -1,7 +1,7 @@
 const Helpers = require('../helpers.js');
 
 module.exports = function(interaction) {
-  interaction.reply({
+  interaction.editReply({
     content: `<https://squawkoverflow.com/members/${interaction.targetId}/gift>`,
     ephemeral: true
   });

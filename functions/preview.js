@@ -1,4 +1,3 @@
-const Helpers = require('../helpers.js');
 const opengraph = require('open-graph');
 
 module.exports = function(interaction) {

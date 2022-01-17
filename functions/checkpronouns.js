@@ -20,7 +20,7 @@ module.exports = async function(interaction) {
       return icon + " " + label;
     });
 
-    interaction.reply({
+    interaction.editReply({
       content: `<@${interaction.targetId}>'s preferred pronouns are:\r\n\r\n  ` + preferredPronouns.join("\r\n  ") + "\r\n",
       ephemeral: true
     });

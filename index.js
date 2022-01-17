@@ -37,6 +37,10 @@ client.on('interactionCreate', async (interaction) => {
       });
     } else if (interaction.isContextMenu()) {
       interaction.commandName = interaction.commandName.toLowerCase().replace(/\s/g, '');
+
+	    await interaction.deferReply({
+		    ephemeral: true
+	    });
     } else {
       let commandNames = ["submit", "remove", "shuffle"];
 
