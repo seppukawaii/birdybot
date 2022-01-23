@@ -1,35 +1,62 @@
-const chance = require('chance').Chance();
-const opengraph = require('open-graph');
+const API = require('../helpers/api.js');
+
+const request = require('request');
+const cheerio = require('cheerio');
 const natural = require('natural');
 const tokenizer = new natural.SentenceTokenizer();
 
-// TODO - replace with API call
-const Birds = require('/var/www/squawkoverflow/api/collections/birds.js');
-
 module.exports = async function(interaction) {
   var taxonomy = interaction.options.getString('taxonomy');
-  var fields = ['commonName', 'scientificName', 'family'];
   var response = {
-    "content": ""
+    content: ""
   };
-  var i = 0;
+  var bird = await API.call('birds', 'GET', {
+    taxonomy: taxonomy
+  });
 
-  if (taxonomy) {
-    var birds = await Birds.fetch('*', taxonomy);
+  if (!bird) {
+    response.content = `I couldn't find any matches for \`${taxonomy}\`, so here's a totally random bird.\r\n\r\n`;
 
-    if (birds.length == 0) {
-      response.content = `I couldn't find any matches for \`${taxonomy}\`, so here's a totally random bird.\r\n\r\n`;
-
-      var bird = await Birds.random();
-    } else {
-      var bird = birds.sort(() => .5 - Math.random())[0];
-    }
-  } else {
-    var bird = await Birds.random();
+    var bird = await API.call('birds', 'GET');;
   }
 
-  opengraph(`https://ebird.org/species/${bird.code}`, (err, meta) => {
-    var fact = chance.pickone(tokenizer.tokenize(meta.description));
+  request({
+    url: `https://www.allaboutbirds.org/guide/${bird.commonName.replace(/\s/g, '_')}`,
+    encoding: 'utf8',
+    gzip: true,
+    jar: true,
+    headers: {
+      'User-Agent': 'NodeOpenGraphCrawler (https://github.com/samholmes/node-open-graph)'
+    }
+  }, async function(err, res, body) {
+    var $ = cheerio.load(body);
+    var facts = [];
+
+    $('li[data-accordion-item]:contains("Cool Facts") div.accordion-content li').each(function(i, elem) {
+      facts.push($(elem).text());
+    });
+
+    if (facts.length == 0) {
+      facts = await new Promise((resolve, reject) => {
+        request({
+          url: `https://ebird.org/species/${bird.code}`,
+          encoding: 'utf8',
+          gzip: true,
+          jar: true,
+          headers: {
+            'User-Agent': 'NodeOpenGraphCrawler (https://github.com/samholmes/node-open-graph)'
+          }
+        }, function(err, res, body) {
+          var $ = cheerio.load(body);
+
+          resolve(tokenizer.tokenize($('meta[property="og:description"]').attr('content')));
+        });
+      });
+    }
+
+    facts.sort(() => Math.random() - 0.5);
+
+    var fact = facts.length > 0 ? facts[0] : "A bird.";
 
     response.content += "```markdown\r\n";
     response.content += `${bird.commonName} (${bird.scientificName})\r\n`;

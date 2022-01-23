@@ -32,34 +32,38 @@ client.on('ready', () => {
         }).then(async (response) => {
           let freebirds = response.results;
 
-		console.log(freebirds);
+          if (freebirds.length > 0) {
+            for (var i = 0, len = freebirds.length; i < len; i++) {
+              await new Promise((resolve, reject) => {
+                let birdypet = freebirds[i];
 
-          for (var i = 0, len = freebirds.length; i < len; i++) {
-            await new Promise((resolve, reject) => {
-              let birdypet = freebirds[i];
-
-              webhookClient.send({
-                content: require('../data/webhooks.json').release.sort(() => .5 - Math.random())[0],
-                embeds: [{
-                  title: birdypet.bird.commonName,
-                  url: `https://squawkoverflow.com/birdypedia/bird/${birdypet.bird.code}`,
-                  description: birdypet.label,
-                  image: {
-                    url: birdypet.image + '#' + birdypet.freebird
-                  }
-                }],
-                components: [{
-                  type: 1,
+                webhookClient.send({
+                  content: require('../data/webhooks.json').release.sort(() => .5 - Math.random())[0],
+                  embeds: [{
+                    title: birdypet.bird.commonName,
+                    url: `https://squawkoverflow.com/birdypedia/bird/${birdypet.bird.code}`,
+                    description: birdypet.label,
+                    image: {
+                      url: birdypet.image + '#' + birdypet.freebird
+                    }
+                  }],
                   components: [{
-                    type: 2,
-                    label: 'Add to Aviary!',
-                    style: 1,
-                    custom_id: `birdypets_catch`,
+                    type: 1,
+                    components: [{
+                      type: 2,
+                      label: 'Add to Aviary!',
+                      style: 1,
+                      custom_id: `birdypets_catch`,
+                    }]
                   }]
-                }]
-              }).then(() => {
-                resolve();
+                }).then(() => {
+                  resolve();
+                });
               });
+            }
+          } else {
+            await webhookClient.send({
+              content: "*All the free birds have found their way into aviaries!*  :tada: *You can hatch your own birds at <https://squawkoverflow.com/hatch>.*"
             });
           }
 

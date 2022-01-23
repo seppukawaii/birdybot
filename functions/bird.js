@@ -1,27 +1,19 @@
+const API = require('../helpers/api.js');
 const opengraph = require('open-graph');
-
-const Birds = require('/var/www/squawkoverflow/api/collections/birds.js');
 
 module.exports = async function(interaction) {
   var taxonomy = interaction.options.getString('taxonomy');
-  var fields = ['commonName', 'scientificName', 'family'];
   var response = {
-    "content": ""
+    content: ""
   };
-  var i = 0;
+  var bird = await API.call('birds', 'GET', {
+    taxonomy: taxonomy
+  });
 
-  if (taxonomy) {
-    var birds = await Birds.fetch('*', taxonomy);
+  if (!bird) {
+    response.content = `I couldn't find any matches for \`${taxonomy}\`, so here's a totally random bird.\r\n\r\n`;
 
-    if (birds.length == 0) {
-      response.content = `I couldn't find any matches for \`${taxonomy}\`, so here's a totally random bird.\r\n\r\n`;
-
-      var bird = await Birds.random();
-    } else {
-      var bird = birds.sort(() => .5 - Math.random())[0];
-    }
-  } else {
-    var bird = await Birds.random();
+    var bird = await API.call('birds', 'GET');;
   }
 
   opengraph(`https://ebird.org/species/${bird.code}`, (err, meta) => {

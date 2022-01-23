@@ -1,13 +1,32 @@
-const Helpers = require('../helpers');
-
 const {
   MessageActionRow,
   MessageButton
 } = require('discord.js');
 
+const {
+  Datastore
+} = require('@google-cloud/datastore');
+
+const DB = new Datastore({
+  namespace: 'birdybot'
+});
+
 module.exports = function(interaction) {
   if (interaction.isMessageComponent()) {
-    Helpers.Games.process(interaction);
+    if (interaction.message) {
+      let game = require(`../games/${interaction.customId.split('-').shift()}.js`);
+
+      DB.get(DB.key(['Games', interaction.message.id])).then(([currentState]) => {
+        game.process(interaction, currentState).then((gameState) => {
+          DB.upsert({
+            key: DB.key(['Games', interaction.message.id]),
+            data: gameState
+          });
+        });
+      });
+    } else {
+      console.log(interaction);
+    }
   } else {
     var components = [];
     var games = [{
@@ -29,7 +48,7 @@ module.exports = function(interaction) {
         name: '🔍'
       }
     }];
-	  /*{
+    /*{
       id: "trickortweet",
       label: "Trick or Tweet",
       emoji: {

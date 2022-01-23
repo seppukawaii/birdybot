@@ -97,30 +97,42 @@ module.exports = async function(interaction) {
 
           setTimeout(function() {
             API.call('freebirds', 'GET', {
-              limit: 1
+              limit: 5
             }).then(async (response) => {
-              let result = response.results[0];
+              var freebirds = response.results;
 
-              message.edit({
-                content: require('../data/webhooks.json').release.sort(() => .5 - Math.random())[0],
-                embeds: [{
-                  title: result.bird.commonName,
-                  url: `https://squawkoverflow.com/birdypedia/bird/${result.bird.code}`,
-                  description: result.label,
-                  image: {
-                    url: result.image + '#' + result.freebird
+              await interaction.channel.messages.fetch({
+                limit: 100
+              }).then((messages) => {
+                for (let msg of messages) {
+                  if (msg.components && msg.components[0][0].label == 'Add to Aviary!') {
+                    freebirds = freebirds.filter((freebird) => freebird.id != msg.embeds[0].url.split('#').pop());
                   }
-                }],
-                components: [{
-                  type: 1,
-                  components: [{
-                    type: 2,
-                    label: 'Add to Aviary!',
-                    style: 1,
-                    custom_id: `birdypets_catch`,
-                  }]
-                }]
-              });
+                }
+
+                if (freebirds.length > 0) {
+                  message.edit({
+                    content: require('../data/webhooks.json').release.sort(() => .5 - Math.random())[0],
+                    embeds: [{
+                      title: freebirds[0].bird.commonName,
+                      url: `https://squawkoverflow.com/birdypedia/bird/${freebirds[0].bird.code}`,
+                      description: freebirds[0].label,
+                      image: {
+                        url: freebirds[0].image + '#' + freebirds[0].freebird
+                      }
+                    }],
+                    components: [{
+                      type: 1,
+                      components: [{
+                        type: 2,
+                        label: 'Add to Aviary!',
+                        style: 1,
+                        custom_id: `birdypets_catch`,
+                      }]
+                    }]
+                  })
+                }
+              })
             })
           }, 1000 * 60); // one minute
         });

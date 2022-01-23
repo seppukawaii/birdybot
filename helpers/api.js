@@ -16,7 +16,7 @@ exports.call = (endpoint, method = "GET", data = {}) => {
     };
 
     for (let key in data) {
-	    data[key] = JSON.stringify(data[key]);
+      data[key] = JSON.stringify(data[key]);
     }
 
     if (method == "GET") {
@@ -28,7 +28,7 @@ exports.call = (endpoint, method = "GET", data = {}) => {
     client.request(options).then((response) => {
       resolve(response.data);
     }).catch((err) => {
-        reject(err);
+      reject(err);
     });
   });
 }

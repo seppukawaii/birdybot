@@ -1,4 +1,4 @@
-const Helpers = require('../helpers.js');
+const API = require('../helpers/api.js');
 const axios = require('axios');
 
 const {
@@ -24,39 +24,57 @@ module.exports = {
   },
   setup: function(interaction) {
     return new Promise((resolve, reject) => {
-      var bird = Helpers.Birds.random();
-      var orders = Helpers.Chance.pickset(Helpers.Birds.orders(), 5);
-      var families = Helpers.Chance.pickset(Helpers.Birds.families(), 5);
+      API.call('birds', 'GET').then(async (bird) => {
+        var orders = await API.call('orders', 'GET').then((results) => {
+          results = results.map((result) => result.name).sort(() => Math.random() - 0.5).slice(0, 5);
 
-      if (!orders.includes(bird.order)) {
-        orders[0] = bird.order;
-      }
+          if (!results.includes(bird.order)) {
+            results[0] = bird.order;
+          }
 
-      if (!families.includes(bird.family)) {
-        families[0] = bird.family;
-      }
+          return results.sort(() => Math.random() - 0.5);
+        });
 
-      axios({
-        url: `https://search.macaulaylibrary.org/catalog?taxonCode=${bird.speciesCode}&mediaType=p&sort=rating_rank_desc`
-      }).then((response) => {
-        resolve({
-          bird: bird,
-          photo: Helpers.Chance.pickone(response.data.results.content).mediaUrl,
-          order: Helpers.Chance.shuffle(orders).map((order) => {
-            return {
-              label: order,
-              style: 2,
-              disabled: false
-            }
-          }),
-          family: Helpers.Chance.shuffle(families).map((family) => {
-            return {
-              label: family,
-              style: 2,
-              disabled: false
-            }
-          }),
-          round: "order"
+        var families = await API.call('families', 'GET').then((results) => {
+          results = results.map((result) => result.name).sort(() => Math.random() - 0.5).slice(0, 5);
+
+          if (!results.includes(bird.family)) {
+            results[0] = bird.family;
+          }
+
+          return results.sort(() => Math.random() - 0.5);
+        });
+
+        axios({
+          url: `https://search.macaulaylibrary.org/catalog?taxonCode=${bird.code}&mediaType=p&sort=rating_rank_desc`
+        }).then((response) => {
+          let photos = response.data.results.content;
+
+          if (photos.length <= 10) {
+            return resolve(this.setup(interaction));
+          }
+
+          photos.sort(() => Math.random() - 0.5);
+
+          resolve({
+            bird: bird,
+            photo: photos[0].mediaUrl,
+            order: orders.map((order) => {
+              return {
+                label: order,
+                style: 2,
+                disabled: false
+              }
+            }),
+            family: families.map((family) => {
+              return {
+                label: family,
+                style: 2,
+                disabled: false
+              }
+            }),
+            round: "order"
+          });
         });
       });
     });
@@ -71,9 +89,9 @@ module.exports = {
 
           this.print(interaction, currentState, true).then(() => {
             setTimeout(function() {
-	      currentState[currentState.round].forEach( (button) => {
-		      button.disabled = true;
-	      });
+              currentState[currentState.round].forEach((button) => {
+                button.disabled = true;
+              });
 
               currentState.round = currentState.round == "order" ? "family" : "done";
               return resolve(currentState);
@@ -118,33 +136,33 @@ module.exports = {
       }
 
       if (gameOver) {
-        Helpers.birdyBuddyFriendship(interaction.user.id).then((friendshipMeter) => {
-          Helpers.fetchBirdyBuddy(interaction.user.id).then(async (birdyBuddy) => {
-            var embeds = null;
-
+        API.call('_birdybuddy', 'POST', {
+          loggedInUser: interaction.user.id,
+          friendship: Math.random() * (5 - 1) + 1
+        }).then((birdyBuddy) => {
+          interaction.editReply({
+            content: `You guessed correctly!  It was the ${gameState.bird.commonName} *(${gameState.bird.scientificName})*\r\n\r\nhttps://ebird.org/species/${gameState.bird.code}`,
+            components: [],
+            embeds: []
+          }).then(() => {
             if (birdyBuddy) {
-              embeds = [
-                new MessageEmbed()
-                .setTitle(birdyBuddy.nickname)
-                .setDescription(`That was fun!  Let's play again!!`)
-                .addFields({
-                  name: 'Friendship',
-                  value: friendshipMeter
-                })
-                .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy._id}`)
-                .setThumbnail(birdyBuddy.birdypet.image)
-              ];
-            }
-
-            interaction.editReply({
-              content: `You guessed correctly!  It was the ${gameState.bird.commonName} *(${gameState.bird.scientificName})*\r\n\r\nhttps://ebird.org/species/${gameState.bird.speciesCode}`,
-              components: [],
-              embeds: embeds
-            }).then(() => {
+              interaction.followUp({
+                content: ' ',
+                embeds: [
+                  new MessageEmbed()
+                  .setTitle(birdyBuddy.nickname || birdyBuddy.bird.commonName)
+                  .setDescription(`That was fun!  Let's play again!!`)
+                  .addFields({
+                    name: 'Friendship',
+                    value: birdyBuddy.friendshipMeter
+                  })
+                  .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy.id}`)
+                  .setThumbnail(birdyBuddy.variant.image)
+                ]
+              }).then(resolve);
+            } else {
               resolve();
-            });
-
-            resolve();
+            }
           });
         });
       } else {

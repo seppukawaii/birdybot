@@ -44,6 +44,10 @@
         "type": 6,
         "required": true
       }]
+    }, {
+      "name": "notifications",
+      "description": "Opt in or out of the @SQUAWKers role for notifications",
+      "type": 1
     }],
     "global": true
   },
@@ -78,6 +82,7 @@
       "group": "Games",
       "description": "a work-in-progress"
     },
+    "publicAck": true,
     "global": true
   },
   {

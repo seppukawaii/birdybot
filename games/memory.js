@@ -1,5 +1,5 @@
+const API = require('../helpers/api.js');
 const Chance = require('chance').Chance();
-const Helpers = require('../helpers.js');
 
 const {
   MessageEmbed,
@@ -115,34 +115,28 @@ module.exports = {
         components: components
       }).then(() => {
         if (gameOver) {
-          Helpers.birdyBuddyFriendship(interaction.user.id).then((friendshipMeter) => {
-            Helpers.fetchBirdyBuddy(interaction.user.id).then(async (birdyBuddy) => {
-              var embeds = null;
-
-              if (birdyBuddy) {
-                embeds = [
+          API.call('_birdybuddy', 'POST', {
+            loggedInUser: interaction.user.id,
+            friendship: Math.random() * (5 - 1) + 1
+          }).then((birdyBuddy) => {
+            if (birdyBuddy) {
+              interaction.followUp({
+                content: ' ',
+                embeds: [
                   new MessageEmbed()
-                  .setTitle(birdyBuddy.nickname)
+                  .setTitle(birdyBuddy.nickname || birdyBuddy.bird.commonName)
                   .setDescription(`That was fun!  Let's play again!!`)
                   .addFields({
                     name: 'Friendship',
-                    value: friendshipMeter
+                    value: birdyBuddy.friendshipMeter
                   })
-                  .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy._id}`)
-                  .setThumbnail(birdyBuddy.birdypet.image)
-                ];
-              }
-
-              interaction.editReply({
-                content: "You found all the birdies!",
-                components: [],
-                embeds: embeds
-              }).then(() => {
-                resolve();
-              });
-
+                  .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy.id}`)
+                  .setThumbnail(birdyBuddy.variant.image)
+                ]
+              }).then(resolve);
+            } else {
               resolve();
-            });
+            }
           });
         } else {
           resolve();

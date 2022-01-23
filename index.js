@@ -21,26 +21,33 @@ client.on('interactionCreate', async (interaction) => {
       interaction.commandName = tmp.shift();
       interaction.customId = tmp.join('_');
 
-      let components = interaction.message.components.map((actionRow) => {
-        actionRow.components = actionRow.components.map((component) => {
-          component.disabled = true;
+      if (interaction.commandName == 'play' && interaction.user.id != interaction.message.interaction.user.id) {
+        return interaction.reply({
+          content: "This isn't your game -- but you can /play your own!",
+          ephemeral: true
+        });
+      } else {
+        let components = interaction.message.components.map((actionRow) => {
+          actionRow.components = actionRow.components.map((component) => {
+            component.disabled = true;
 
-          return component;
+            return component;
+          });
+
+          return actionRow;
         });
 
-        return actionRow;
-      });
-
-      await interaction.update({
-        content: interaction.message.content,
-        components: components
-      });
+        await interaction.update({
+          content: interaction.message.content,
+          components: components
+        });
+      }
     } else if (interaction.isContextMenu()) {
       interaction.commandName = interaction.commandName.toLowerCase().replace(/\s/g, '');
 
-	    await interaction.deferReply({
-		    ephemeral: true
-	    });
+      await interaction.deferReply({
+        ephemeral: true
+      });
     } else {
       let commandNames = ["submit", "remove", "shuffle"];
 

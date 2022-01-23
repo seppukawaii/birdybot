@@ -52,7 +52,7 @@ module.exports = async function(message) {
         for (var [id, member] of message.mentions.members) {
           API.call('collect', 'POST', {
             loggedInUser: member.id,
-            illustration: illustration.id
+            variant: illustration.id
           });
         }
 
@@ -63,7 +63,7 @@ module.exports = async function(message) {
         }
 
         embeds.push({
-          title: illustration.bird.name,
+          title: illustration.bird.commonName,
           description: illustration.label || " ",
           url: `https://squawkoverflow.com/birdypedia/bird/${illustration.bird.code}`,
           thumbnail: {
