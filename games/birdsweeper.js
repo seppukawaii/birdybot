@@ -186,7 +186,7 @@ module.exports = {
   print: function(interaction, gameState, disabled = false) {
     return new Promise((resolve, reject) => {
       var components = [];
-      var gameOver = gameState.board.find((tile) => tile.state == "oops") || gameState.board.filter((tile) => !tile.bird && tile.state == 'hidden').length == 0;
+      gameState.over = gameState.board.find((tile) => tile.state == "oops") || gameState.board.filter((tile) => !tile.bird && tile.state == 'hidden').length == 0;
 
       for (var i = 0, len = gameState.board.length; i < len; i++) {
         if (i % 5 == 0) {
@@ -199,11 +199,11 @@ module.exports = {
         actionRow.addComponents(new MessageButton({
           type: 2,
           emoji: {
-            name: !gameOver && tile.state == "hidden" ? "🟦" : tile.emoji,
+            name: !gameState.over && tile.state == "hidden" ? "🟦" : tile.emoji,
           },
           style: tileStyles[tile.state],
           customId: `play_birdsweeper-${i}`,
-          disabled: gameOver ? true : disabled
+          disabled: gameState.over ? true : disabled
         }));
       }
 
@@ -211,33 +211,7 @@ module.exports = {
         content: gameState.message,
         components: components
       }).then(() => {
-        if (gameOver) {
-          API.call('_birdybuddy', 'POST', {
-            loggedInUser: interaction.user.id,
-            friendship: Math.random() * (5 - 1) + 1
-          }).then((birdyBuddy) => {
-            if (birdyBuddy) {
-              interaction.followUp({
-                content: ' ',
-                embeds: [
-                  new MessageEmbed()
-                  .setTitle(birdyBuddy.nickname || birdyBuddy.bird.commonName)
-                  .setDescription(`That was fun!  Let's play again!!`)
-                  .addFields({
-                    name: 'Friendship',
-                    value: birdyBuddy.friendshipMeter
-                  })
-                  .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy.id}`)
-                  .setThumbnail(birdyBuddy.variant.image)
-                ]
-              }).then(resolve);
-            } else {
-              resolve();
-            }
-          });
-        } else {
-          resolve();
-        }
+        resolve();
       });
     }).catch((err) => {
       console.error(err);

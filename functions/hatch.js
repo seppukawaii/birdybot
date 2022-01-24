@@ -19,8 +19,9 @@ module.exports = function(interaction) {
         let letter = egg.adjective.slice(0, 1).toUpperCase();
 
         egg.emoji = await DB.get(DB.key(['Eggs', egg.adjective])).then(async ([data]) => {
+		console.log(data);
           if (data) {
-            return data.emoji;
+            return data;
           } else {
             return {
               name: '🥚'
@@ -28,6 +29,8 @@ module.exports = function(interaction) {
           }
         });
       }
+
+	    console.log(eggs);
 
       interaction.editReply({
         content: "These eggs are almost ready to hatch!  Which one will you pick?",

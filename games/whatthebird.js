@@ -111,8 +111,9 @@ module.exports = {
   print: function(interaction, gameState, disabled = false) {
     return new Promise((resolve, reject) => {
       var components = [];
-      var gameOver = gameState.round == "done";
       var rows = ["order", "family"];
+
+      gameState.over = gameState.round == "done";
 
       for (var row of rows) {
         components.push(new MessageActionRow());
@@ -134,40 +135,17 @@ module.exports = {
           break;
         }
       }
-
-      if (gameOver) {
-        API.call('_birdybuddy', 'POST', {
-          loggedInUser: interaction.user.id,
-          friendship: Math.random() * (5 - 1) + 1
-        }).then((birdyBuddy) => {
-          interaction.editReply({
-            content: `You guessed correctly!  It was the ${gameState.bird.commonName} *(${gameState.bird.scientificName})*\r\n\r\nhttps://ebird.org/species/${gameState.bird.code}`,
-            components: [],
-            embeds: []
-          }).then(() => {
-            if (birdyBuddy) {
-              interaction.followUp({
-                content: ' ',
-                embeds: [
-                  new MessageEmbed()
-                  .setTitle(birdyBuddy.nickname || birdyBuddy.bird.commonName)
-                  .setDescription(`That was fun!  Let's play again!!`)
-                  .addFields({
-                    name: 'Friendship',
-                    value: birdyBuddy.friendshipMeter
-                  })
-                  .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy.id}`)
-                  .setThumbnail(birdyBuddy.variant.image)
-                ]
-              }).then(resolve);
-            } else {
-              resolve();
-            }
-          });
+      if (gameState.over) {
+        interaction.editReply({
+          content: `You guessed correctly!  It was the ${gameState.bird.commonName} *(${gameState.bird.scientificName})*\r\n\r\nhttps://ebird.org/species/${gameState.bird.code}`,
+          components: [],
+          embeds: []
+        }).then(() => {
+          resolve();
         });
       } else {
         interaction.editReply({
-          content: gameOver ? "You guessed correctly!" : `Can you guess the \`${gameState.round}\` of the bird in this photo?`,
+          content: gameState.over ? "You guessed correctly!" : `Can you guess the \`${gameState.round}\` of the bird in this photo?`,
           embeds: [{
             image: {
               url: gameState.photo

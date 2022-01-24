@@ -1,6 +1,11 @@
+const API = require('../helpers/api.js');
+const Jimp = require('jimp');
+
 const {
+  MessageEmbed,
   MessageActionRow,
-  MessageButton
+  MessageButton,
+  WebhookClient
 } = require('discord.js');
 
 const {
@@ -22,6 +27,33 @@ module.exports = function(interaction) {
             key: DB.key(['Games', interaction.message.id]),
             data: gameState
           });
+
+          if (gameState.over) {
+            var friendship = Math.round(Math.random() * (5 - 1) + 1);
+
+            API.call('_birdybuddy', 'POST', {
+              loggedInUser: interaction.user.id,
+              friendship: friendship,
+            }).then((birdyBuddy) => {
+              if (birdyBuddy) {
+                interaction.channel.createWebhook(birdyBuddy.nickname || birdyBuddy.bird.commonName, {
+                  avatar: birdyBuddy.variant.image
+                }).then((webhook) => {
+                  webhook.send({
+                    content: `That was fun!  Let's play again!!`,
+                    embeds: [
+                      new MessageEmbed()
+                      .setTitle(`+${friendship} Friendship`)
+                      .setDescription(birdyBuddy.friendshipMeter)
+                      .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy.id}`)
+                    ]
+                  }).then(() => {
+                    webhook.delete();
+                  });
+                });
+              }
+            });
+          }
         });
       });
     } else {

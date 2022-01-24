@@ -1,18 +1,10 @@
 const API = require('../helpers/api.js');
 
-const Helpers = require('../helpers.js');
-
 const {
   MessageEmbed,
   MessageActionRow,
   MessageButton
 } = require('discord.js');
-
-const {
-  v1
-} = require('@google-cloud/pubsub');
-
-const subClient = new v1.SubscriberClient();
 
 module.exports = async function(interaction) {
   const memberId = interaction.user.id;
@@ -75,7 +67,7 @@ module.exports = async function(interaction) {
           id: interaction.user.id
         });
 
-        var pronoun = member && member.pronouns ? Helpers.pronouns(member, 'determiner') : 'their';
+        var pronoun = member && member.pronouns ? require('../helpers/pronouns')(member, 'determiner') : 'their';
 
         var embeds = [{
           title: birdypet.variant.bird.commonName,

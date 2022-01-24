@@ -89,7 +89,7 @@ module.exports = {
   print: function(interaction, gameState, disabled = false) {
     return new Promise((resolve, reject) => {
       var components = [];
-      var gameOver = gameState.board.filter((tile) => tile.state == "hidden").length == 0;
+      gameState.over = gameState.board.filter((tile) => tile.state == "hidden").length == 0;
 
       for (var i = 0, len = gameState.board.length; i < len; i++) {
         if (i % 3 == 0) {
@@ -106,41 +106,15 @@ module.exports = {
           },
           style: tileStyles[tile.state],
           customId: `play_memory-${i}`,
-          disabled: gameOver ? true : disabled
+          disabled: gameState.over ? true : disabled
         }));
       }
 
       interaction.editReply({
-        content: gameOver ? "You found all the birdies!" : "Birdy, birdy, where's the birdy?  Find the birdy and its mate!",
+        content: gameState.over ? "You found all the birdies!" : "Birdy, birdy, where's the birdy?  Find the birdy and its mate!",
         components: components
       }).then(() => {
-        if (gameOver) {
-          API.call('_birdybuddy', 'POST', {
-            loggedInUser: interaction.user.id,
-            friendship: Math.random() * (5 - 1) + 1
-          }).then((birdyBuddy) => {
-            if (birdyBuddy) {
-              interaction.followUp({
-                content: ' ',
-                embeds: [
-                  new MessageEmbed()
-                  .setTitle(birdyBuddy.nickname || birdyBuddy.bird.commonName)
-                  .setDescription(`That was fun!  Let's play again!!`)
-                  .addFields({
-                    name: 'Friendship',
-                    value: birdyBuddy.friendshipMeter
-                  })
-                  .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy.id}`)
-                  .setThumbnail(birdyBuddy.variant.image)
-                ]
-              }).then(resolve);
-            } else {
-              resolve();
-            }
-          });
-        } else {
-          resolve();
-        }
+        resolve();
       });
     }).catch((err) => {
       console.error(err);

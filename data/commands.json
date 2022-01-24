@@ -106,11 +106,6 @@
     "global": false
   },
   {
-    "name": "redeem",
-    "description": "Redeem special holiday currency for special holiday birds!",
-    "global": false
-  },
-  {
     "name": "help",
     "description": "Information for all current Birdy commands",
     "help": {
@@ -202,8 +197,17 @@
     "description": "Summon a random bird pic from Flickr",
     "help": {
       "group": "BIRDS",
-      "description": "Pulls a random bird picture from Flickr."
+      "description": [
+        "Pulls a random bird picture from Flickr.",
+        "taxonomy : *Optional* An order, family, or common name to limit the results to."
+      ]
     },
+    "options": [{
+      "name": "taxonomy",
+      "description": "Specify an order, family, or common name to pull from",
+      "type": 3,
+      "required": false
+    }],
     "global": true
   },
   {
@@ -214,12 +218,12 @@
       "group": "BIRDS",
       "description": [
         "Pulls a random bird from eBird.",
-        "taxonomy : *Optional* An order or family to limit the results to."
+        "taxonomy : *Optional* An order, family, or common name to limit the results to."
       ]
     },
     "options": [{
       "name": "taxonomy",
-      "description": "Specify an order or family to pull from",
+      "description": "Specify an order, family, or common name to pull from",
       "type": 3,
       "required": false
     }],
@@ -228,19 +232,19 @@
   {
     "name": "fact",
     "publicAck": true,
-    "description": "Summon a random bird fact from eBird",
+    "description": "Summon a random bird fact",
     "help": {
       "group": "BIRDS",
       "description": [
-        "Pulls a random (and usually useless) bird fact from eBird.",
-        "taxonomy : *Optional* An order or family to limit the results to."
+        "Pulls a random (and usually useless) bird fact.",
+        "taxonomy : *Optional* An order, family, or common name to limit the results to."
       ]
     },
     "options": [{
       "name": "taxonomy",
-      "description": "Specify an order or family to pull from",
+      "description": "Specify an order, family, or common name to pull from",
       "type": 3,
-      "required": "false"
+      "required": false
     }],
     "global": true
   },

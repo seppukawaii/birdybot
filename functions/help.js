@@ -1,5 +1,3 @@
-const Helpers = require('../helpers.js');
-
 module.exports = async function(interaction) {
   const commands = require('../data/commands.json');
   const groups = {};
@@ -51,7 +49,9 @@ module.exports = async function(interaction) {
         }
         return true;
       }),
-      Helpers.sleep(1000)
+      new Promise((resolve, reject) => {
+        setTimeout(resolve, 1000);
+      })
     ]);
   }
 };
