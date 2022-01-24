@@ -36,19 +36,34 @@ module.exports = function(interaction) {
               friendship: friendship,
             }).then((birdyBuddy) => {
               if (birdyBuddy) {
-                interaction.channel.createWebhook(birdyBuddy.nickname || birdyBuddy.bird.commonName, {
-                  avatar: birdyBuddy.variant.image
-                }).then((webhook) => {
-                  webhook.send({
-                    content: `That was fun!  Let's play again!!`,
-                    embeds: [
-                      new MessageEmbed()
-                      .setTitle(`+${friendship} Friendship`)
-                      .setDescription(birdyBuddy.friendshipMeter)
-                      .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy.id}`)
-                    ]
-                  }).then(() => {
-                    webhook.delete();
+                Jimp.read(birdyBuddy.variant.image).then((image) => {
+                  var px = Math.max(image.bitmap.height, image.bitmap.width);
+
+                  new Jimp(px, px, '#ffffff', (err, background) => {
+                    var mimes = {
+                      "jpg": "JPEG",
+                      "jpeg": "JPEG",
+                      "png": "PNG"
+                    };
+
+                    background.composite(image, (px - image.bitmap.width) / 2, (px - image.bitmap.height) / 2)
+                      .getBase64(Jimp[`MIME_${mimes[birdyBuddy.variant.filetype]}`], (err, img) => {
+                        interaction.channel.createWebhook(birdyBuddy.nickname || birdyBuddy.bird.commonName, {
+                          avatar: img
+                        }).then((webhook) => {
+                          webhook.send({
+                            content: `That was fun!  Let's play again!!`,
+                            embeds: [
+                              new MessageEmbed()
+                              .setTitle(`+${friendship} Friendship`)
+                              .setDescription(birdyBuddy.friendshipMeter)
+                              .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy.id}`)
+                            ]
+                          }).then(() => {
+                            webhook.delete();
+                          });
+                        });
+                      });
                   });
                 });
               }
