@@ -12,9 +12,10 @@ const sharp = require('sharp');
 module.exports = function(interaction) {
   interaction.guild.emojis.fetch().then((emojiList) => {
     const emoji = emojiList.find((emoji) => emoji.animated && emoji.name == interaction.options.getString('emoji'));
+
     if (emoji) {
       interaction.channel.createWebhook(interaction.member.displayName, {
-        avatar: interaction.member.user.avatarURL()
+        avatar: interaction.member.avatarURL().replace('.webp', '.png')
       }).then((webhook) => {
         webhook.send(`<a:${emoji.name}:${emoji.id}>`).then(() => {
           interaction.editReply({
@@ -34,7 +35,7 @@ module.exports = function(interaction) {
         bucket.file(`u${input[0]}/u${input[1]}.png`).download().then(([data]) => {
           sharp(data).resize(128, 128).toBuffer().then((buffer) => {
             interaction.channel.createWebhook(interaction.member.displayName, {
-              avatar: interaction.member.user.avatarURL()
+              avatar: interaction.member.avatarURL()
             }).then((webhook) => {
               webhook.send({
                 content: ' ',

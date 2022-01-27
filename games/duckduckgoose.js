@@ -9,27 +9,9 @@ const {
 } = require('discord.js');
 
 const tileStyles = {
-  hidden: 2,
-  revealed: 2,
-  oops: 4
+  open: 2,
+  victory: 3
 };
-
-const numMoji = [
-  '0️⃣',
-  '1️⃣',
-  '2️⃣',
-  '3️⃣',
-  '4️⃣',
-  '5️⃣',
-  '6️⃣',
-  '7️⃣',
-  '8️⃣',
-  '9️⃣'
-];
-
-const birdMoji = [
-  "🦜", "🦃", "🐓", "🦢", "🐦", "🦆", "🐧", "🦉", "🦩", "🦚"
-];
 
 module.exports = {
   process: function(interaction, currentState) {
@@ -48,51 +30,12 @@ module.exports = {
   setup: function(interaction) {
     return new Promise((resolve, reject) => {
       var board = Array(22).fill({
-        touches: 0,
-        state: 'hidden',
-        bird: false
+        state: 'open',
+        
       });
-
-      Chance.pickset(birdMoji, 3).forEach((bird) => {
-        board.push({
-          emoji: bird,
-          state: 'hidden',
-          bird: true
-        });
-      });
-
-      board = Chance.shuffle(board);
-
-      for (var i = 0, len = board.length; i < len; i++) {
-        let tile = {
-          ...board[i]
-        };
-
-        if (!tile.bird) {
-          let dirs = {
-            north: i > 4,
-            south: i < 20,
-            east: (i + 1) % 5 != 0,
-            west: i % 5 != 0
-          };
-
-          tile.touches += dirs.north && board[i - 5].bird ? 1 : 0;
-          tile.touches += dirs.north && dirs.east && board[i - 4].bird ? 1 : 0;
-          tile.touches += dirs.north && dirs.west && board[i - 6].bird ? 1 : 0;
-          tile.touches += dirs.east && board[i + 1].bird ? 1 : 0;
-          tile.touches += dirs.west && board[i - 1].bird ? 1 : 0;
-          tile.touches += dirs.south && board[i + 5].bird ? 1 : 0;
-          tile.touches += dirs.south && dirs.east && board[i + 6].bird ? 1 : 0;
-          tile.touches += dirs.south && dirs.west && board[i + 4].bird ? 1 : 0;
-
-          tile.emoji = numMoji[tile.touches];
-
-          board[i] = tile;
-        }
-      }
 
       resolve({
-        message: "Look out, there are birds on the loose! Do your best to surround them without spooking them so you can catch them safely.",
+        message: "Duck duck goose!",
         board: board
       });
     });

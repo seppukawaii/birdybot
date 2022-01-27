@@ -1,5 +1,6 @@
 const API = require('../helpers/api.js');
 const axios = require('axios');
+const opengraph = require('open-graph');
 
 const {
   MessageEmbed,
@@ -136,12 +137,27 @@ module.exports = {
         }
       }
       if (gameState.over) {
-        interaction.editReply({
-          content: `You guessed correctly!  It was the ${gameState.bird.commonName} *(${gameState.bird.scientificName})*\r\n\r\nhttps://ebird.org/species/${gameState.bird.code}`,
-          components: [],
-          embeds: []
-        }).then(() => {
-          resolve();
+        opengraph(`https://ebird.org/species/${gameState.bird.code}`, (err, meta) => {
+          interaction.editReply({
+            content: `You guessed correctly!`,
+            components: components,
+            embeds: [{
+              title: gameState.bird.commonName,
+              author: {
+                name: gameState.bird.scientificName
+              },
+              description: meta.description.trim(),
+              thumbnail: {
+                url: gameState.photo
+              },
+              image: {
+                url: meta.image.url
+              },
+              url: `https://ebird.org/species/${gameState.bird.code}`
+            }]
+          }).then(() => {
+            resolve();
+          });
         });
       } else {
         interaction.editReply({

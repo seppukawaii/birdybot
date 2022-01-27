@@ -59,7 +59,8 @@ module.exports = async function(interaction) {
 
       API.call('collect', "POST", {
         loggedInUser: interaction.user.id,
-        freebird: freebird
+        freebird: freebird,
+	variant: variant
       }).then(async (birdypet) => {
         interaction.message.delete();
 

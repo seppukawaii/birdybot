@@ -13,13 +13,12 @@ module.exports = function(interaction) {
   API.call('hatch', "GET", {
       loggedInUser: interaction.user.id,
     }).then(async (response) => {
-      let eggs = response.slice(0, 5);
+      let eggs = [];
 
-      for (let egg of eggs) {
+      for (let egg of response) {
         let letter = egg.adjective.slice(0, 1).toUpperCase();
 
-        egg.emoji = await DB.get(DB.key(['Eggs', egg.adjective])).then(async ([data]) => {
-		console.log(data);
+        let emoji = await DB.get(DB.key(['Eggs', egg.adjective])).then(async ([data]) => {
           if (data) {
             return data;
           } else {
@@ -28,32 +27,41 @@ module.exports = function(interaction) {
             };
           }
         });
-      }
 
-	    console.log(eggs);
+        eggs.push({
+          type: 2,
+          label: `${egg.adjective} egg` + (egg.hasOwnProperty('numHatched') ? `   (${egg.numHatched}/${egg.numSpecies})` : ''),
+          style: 2,
+          custom_id: `eggytime_${egg.adjective}`,
+          emoji: emoji
+        });
+      }
 
       interaction.editReply({
         content: "These eggs are almost ready to hatch!  Which one will you pick?",
         ephemeral: true,
         components: [{
           type: 1,
-          components: eggs.map((egg) => {
-            return {
-              type: 2,
-              label: `${egg.adjective} egg`,
-              style: 2,
-              custom_id: `eggytime_${egg.adjective}`,
-              emoji: egg.emoji
-            };
-          })
+          components: eggs.slice(0, 3).filter((egg) => typeof egg != "undefined")
+        }, {
+          type: 1,
+          components: eggs.slice(3, 6).filter((egg) => typeof egg != "undefined")
         }]
       });
     })
     .catch((err) => {
-      console.log(err);
-      interaction.editReply({
-        content: `*You have ${err.response.data.timeUntil} minutes before you can hatch another egg.*`,
-        ephemeral: true
-      });
+      if (err.response) {
+        interaction.editReply({
+          content: `*You have ${err.response.data.timeUntil} minutes before you can hatch another egg.*`,
+          ephemeral: true
+        });
+      } else {
+        console.log(err);
+
+        interaction.editReply({
+          content: '*Something went wrong!  Please file a \`/bug\` report.  Sorry for the inconvenience!*',
+          ephemeral: true
+        });
+      }
     });
 }

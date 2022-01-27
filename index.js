@@ -1,5 +1,3 @@
-//const Members = require('/var/www/squawkoverflow/api/collections/members.js');
-
 const secrets = require('./secrets.json');
 const commands = require('./data/commands.json');
 
@@ -73,7 +71,7 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client.on('messageCreate', (message) => {
-  if (message.author.id == "121294882861088771" && message.content.startsWith('!')) {
+  if (message.guild.id == "863864246835216464" && message.author.id == "121294882861088771" && message.content.startsWith('!')) {
     var command = message.content.split(' ').shift().replace('!', '');
 
     require(`./functions/${command}.js`)(message);

@@ -6,7 +6,6 @@
   "scripts": {
     "start": "forever start --uid birdybot index.js",
     "restart": "forever restart birdybot",
-    "update-data": "cd /var/www/squawkoverflow/public/data/ && cp -t ~/birdybot/data birds.json birdypets.json adjectives.json",
     "logs": "cat ../.forever/birdybot.log"
   },
   "author": "",
