@@ -270,73 +270,21 @@
   {
     "name": "submit",
     "publicAck": true,
-    "description": "Submit to one of the Niche Bird Blogs",
-    "help": {
-      "group": "Niche Bird Blogs",
-      "description": [
-        "Submit a picture to one of the Niche Bird Blogs.",
-        "        url : The url to the image. Currently supported: macaulaylibrary.org, flickr.com, and danielslim.com.",
-        "speciescode : *Optional* The species code from eBird to identify the bird in the picture for websites other than macaulaylibrary.org. If not provided, the submission will go into drafts."
-      ]
-    },
-    "options": [],
-    "default_permission": false,
-    "global": false
-  },
-  {
-    "name": "fix",
-    "publicAck": true,
-    "description": "Fix a Niche Bird Blog post",
-    "help": {
-      "group": "Niche Bird Blogs",
-      "description": [
-        "Fix a species for a Niche Bird Blog post.",
-        "speciescode : The species code from eBird to identify the bird in the picture."
-      ]
-    },
+    "description": "Submit an egg to SQUAWK!",
     "options": [{
-        "name": "photo",
-        "description": "Birdy Photo ID",
-        "type": 3,
-        "required": true
-      },
-      {
-        "name": "speciescode",
-        "description": "Species Code (ebird.org)",
-        "type": 3,
-        "required": true
-      }
-
-    ],
+      "name": "url",
+      "description": "URL of image (you can upload it, right click, and Copy Link)",
+      "type": 3
+    }, {
+      "name": "adjectives",
+      "description": "A comma-separated list of adjectives",
+      "type": 3
+    }],
     "default_permission": false,
-    "global": false
-  },
-  {
-    "name": "shuffle",
-    "publicAck": true,
-    "description": "Shuffle the queue for one of the Niche Bird Blogs",
-    "help": {
-      "group": "Niche Bird Blogs",
-      "description": [
-        "Shuffle the queue for one of the Niche Bird Blogs."
-      ]
-    },
-    "options": [],
-    "default_permission": false,
-    "global": false
-  },
-  {
-    "name": "remove",
-    "publicAck": true,
-    "description": "Remove a photo from one of the Niche Bird Blogs",
-    "help": {
-      "group": "Niche Bird Blogs",
-      "description": [
-        "Remove a photo from one of the Niche Bird Blogs."
-      ]
-    },
-    "options": [],
-    "default_permission": false,
-    "global": false
+    "permissions": [{
+      "id": "936345747815792640",
+      "type": 1,
+      "permission": true
+    }]
   }
 ]

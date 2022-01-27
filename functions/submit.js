@@ -1,108 +1,71 @@
-const Helpers = require('../helpers.js');
+const API = require('../helpers/api.js');
+const secrets = require('../secrets.json');
 
 const {
   Datastore
 } = require('@google-cloud/datastore');
 
 const DB = new Datastore({
-  namespace: 'birdy-blogs'
+  namespace: 'birdybot'
 });
 
-module.exports = async function (interaction) {
-    var blog = await Helpers.fetchBirdBlog(interaction.options.getString('blog'));
-    var source = interaction.options.getString('url');
-    var bird = Helpers.parseSpeciesCode(interaction.options.getString('speciescode'));
-    var userId = interaction.user.id;
+module.exports = async function(interaction) {
+  let url = interaction.options.getString('url');
+  let adjectives = interaction.options.getString('adjectives');
 
-    try {
-      bird = Helpers.fetchBirdBy('speciesCode', bird);
-    } catch (err) {
-      bird = null;
-    }
-	
-    var photo = await Helpers.fetchBirdPhoto(source, bird ? bird.speciesCode : null);
-    var query = DB.createQuery('Photo').filter('source', '=', photo.source);
-    var results = await DB.runQuery(query).then((results) => results[0]);
+  if (adjectives) {
+    adjectives = adjectives.split(',');
 
-    if (results.length > 0) {
-      var key = results[0][DB.KEY];
-      var flocks = results[0].flocks ? results[0].flocks : [];
-      var submittedAt = results[0].submittedAt;
-    } else {
-      var key = DB.key(['Photo']);
-      var flocks = [];
-      var submittedAt = Date.now();
-    }
+    let preview = {};
 
-    try {
-      photo.flocks = [...new Set([...flocks, blog.name])];
-      photo.submittedBy = userId;
-      photo.submittedAt = submittedAt;
+    for (let adjective of adjectives) {
+      adjective = adjective.toLowerCase().replace(/[^a-z]+/g, '');
 
-      DB.upsert({
-        "key": key,
-        "data": photo
-      }).then(async (result) => {
-        var response = `ID: \`${key.id}\`\r\nBlogs: \`${photo.flocks.join(", ")}\`\r\nImage: ${photo.image.full}\r\nSource: <${photo.source}>`;
+      await interaction.client.guilds.fetch(secrets.EGGS[adjective.slice(0, 1).toUpperCase()]).then(async (guild) => {
+        let existing = await guild.emojis.fetch().then((emojis) => emojis.find((emoji) => emoji.name == adjective));
 
-        if (photo.species.speciesCode) {
-          response = {
-            content: `${response}`
-          };
-        } else {
-          response = {
-            content: `I couldn't parse what species \` ${interaction.options.getString('speciescode')} \` is, sorry!\r\n\r\n${response}`
-          };
+        if (existing) {
+          await existing.delete();
         }
 
-        if (photo.species.speciesCode) {
-          var tags = [
-            photo.species.commonName,
-            photo.species.scientificName,
-            photo.species.family,
-            photo.species.order,
-            'birds',
-            photo.attribution[0]
-          ];
-        } else {
-          var tags = [
-            'birds',
-            photo.attribution[0]
-          ];
-        }
+        let id = await guild.emojis.create(url, adjective).then((emoji) => emoji.id);
 
-        await interaction.editReply(response);
+        preview = {
+          name: adjective,
+          id: id
+        };
 
-          if (blog.crosspost) {
-            const client = blog.name == "fullfrontalbirds" ? Helpers.tumblr() : Helpers.birblr();
-
-            var query = DB.createQuery('Birblr').filter('tumblr', '=', blog.name).filter('squawkID', '=', key.id);
-            var result = await DB.runQuery(query).then((results) => results[0]);
-
-            if (results.length > 0) {
-              // already exists
-            } else {
-              client.createPhotoPost(blog.name, {
-                type: 'photo',
-                state: photo.species.speciesCode ? 'queue' : 'draft',
-                tags: tags.join(',').toLowerCase(),
-                source_url: photo.source,
-                source: photo.image.full,
-                caption: `<p>${photo.species.commonName} <i>(${photo.species.scientificName})</i></p>\r\n<p><a href="${photo.attribution[1]}">© ${photo.attribution[0]}</a></p>`
-              }, (err, data) => {
-                DB.upsert({
-                  key: DB.key(['Birblr', data.id_string]),
-                  data: {
-                    tumblr: blog.name,
-                    squawkID: key.id,
-                    submittedBy: userId
-                  }
-                });
-              });
-            }
+        await DB.save({
+          key: DB.key(['Eggs', adjective]),
+          data: {
+            id: id
           }
+        });
+
+        await API.call('_egg', 'POST', {
+          adjective: adjective,
+          id: id,
+          member: interaction.user.id
+        });
       });
-    } catch (err) {
-      console.log(err);
     }
-};
+
+    interaction.editReply({
+      content: `<:${preview.name}:${preview.id}>`,
+      embeds: [{
+        description: adjectives.join(', '),
+        image: {
+          url: `https://cdn.discordapp.com/emojis/${preview.id}.png`
+        }
+      }]
+    });
+  } else if (url) {
+    interaction.editReply({
+      content: `Please include a comma-separated list of adjectives for ${url}`
+    });
+  } else {
+    interaction.editReply({
+      content: 'Please include a URL (you can upload the image here, right-click it, and select Copy Link) and a comma-separated list of adjectives.'
+    });
+  }
+}
