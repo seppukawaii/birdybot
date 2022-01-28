@@ -274,11 +274,17 @@
     "options": [{
       "name": "url",
       "description": "URL of image (you can upload it, right click, and Copy Link)",
-      "type": 3
+      "type": 3,
+      "required": true
     }, {
       "name": "adjectives",
       "description": "A comma-separated list of adjectives",
-      "type": 3
+      "type": 3,
+      "required": true
+    }, {
+      "name": "credit",
+      "description": "The user to credit this art to (optional)",
+      "type": 6
     }],
     "default_permission": false,
     "permissions": [{

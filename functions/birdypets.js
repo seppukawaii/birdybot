@@ -35,6 +35,9 @@ module.exports = async function(interaction) {
               image: {
                 url: birdypet.variant.image
               },
+              thumbnail: {
+                url: `https://storage.googleapis.com/squawkoverflow/${ birdypet.egg.icon || '/eggs/D/default.png' }`
+              },
               url: birdypet.id ? `https://squawkoverflow.com/birdypet/${birdypet.id}` : ""
             }]
           });
@@ -60,7 +63,7 @@ module.exports = async function(interaction) {
       API.call('collect', "POST", {
         loggedInUser: interaction.user.id,
         freebird: freebird,
-	variant: variant
+        variant: variant
       }).then(async (birdypet) => {
         interaction.message.delete();
 
