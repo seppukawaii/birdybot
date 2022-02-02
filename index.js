@@ -10,7 +10,19 @@ const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES]
 });
 
+var reconnectCooldown = 0;
+
 client.login(secrets.DISCORD.BOT_TOKEN);
+
+client.on('disconnect', () => {
+  reconnectCooldown += 1000;
+
+  console.log(`Disconnectd.  Reconnecting in ${reconnectCooldown / 1000} seconds...`);
+
+  setTimeout(function() {
+    client.login(secrets.DISCORD.BOT_TOKEN);
+  }, reconnectCooldown);
+});
 
 client.on('interactionCreate', async (interaction) => {
   try {
@@ -77,17 +89,6 @@ client.on('messageCreate', (message) => {
     require(`./functions/${command}.js`)(message);
   }
 });
-
-/*
-client.on('guildMemberUpdate', (oldData, newData) => {
-  if (oldData.displayName != newData.displayName || oldData.avatar != newData.avatar) {
-    Members.get(newData.id).set({
-      'username': newData.displayName,
-      'avatar': `https://cdn.discordapp.com/avatars/${newData.id}/${newData.avatar}.webp`
-    });
-  }
-});
-*/
 
 client.on('error', (err) => {
   console.error(err);

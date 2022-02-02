@@ -65,72 +65,45 @@ module.exports = async function(interaction) {
         freebird: freebird,
         variant: variant
       }).then(async (birdypet) => {
-        interaction.message.delete();
+	      interaction.message.delete();
 
-        var member = await API.call('member', 'GET', {
-          id: interaction.user.id
-        });
+        API.call('freebirds', 'GET', {
+          limit: 5
+        }).then(async (response) => {
+          var freebirds = response.results;
 
-        var pronoun = member && member.pronouns ? require('../helpers/pronouns')(member, 'determiner') : 'their';
+          await interaction.channel.messages.fetch({
+            limit: 100
+          }).then((messages) => {
+            for (let msg of messages) {
+              if (msg.components && msg.components[0][0].label == 'Add to Aviary!') {
+                freebirds = freebirds.filter((freebird) => freebird.id != msg.embeds[0].url.split('#').pop());
+              }
+            }
 
-        var embeds = [{
-          title: birdypet.variant.bird.commonName,
-          description: birdypet.variant.label || " ",
-          image: {
-            url: birdypet.variant.image
-          },
-          url: `https://squawkoverflow.com/birdypet/${birdypet.id}`
-        }];
-
-        interaction.channel.send({
-          content: `${interaction.member.displayName} excitedly adds the ${birdypet.variant.bird.commonName} to ${pronoun} aviary!`,
-          embeds: embeds
-        }).then((message) => {
-          message.edit({
-            content: `<@${memberId}> excitedly adds the ${birdypet.variant.bird.commonName} to ${pronoun} aviary!`,
-            embeds: embeds
-          });
-
-          setTimeout(function() {
-            API.call('freebirds', 'GET', {
-              limit: 5
-            }).then(async (response) => {
-              var freebirds = response.results;
-
-              await interaction.channel.messages.fetch({
-                limit: 100
-              }).then((messages) => {
-                for (let msg of messages) {
-                  if (msg.components && msg.components[0][0].label == 'Add to Aviary!') {
-                    freebirds = freebirds.filter((freebird) => freebird.id != msg.embeds[0].url.split('#').pop());
+            if (freebirds.length > 0) {
+              interaction.channel.send({
+                content: require('../data/webhooks.json').release.sort(() => .5 - Math.random())[0],
+                embeds: [{
+                  title: freebirds[0].bird.commonName,
+                  url: `https://squawkoverflow.com/birdypedia/bird/${freebirds[0].bird.code}`,
+                  description: freebirds[0].label,
+                  image: {
+                    url: freebirds[0].image + '#' + freebirds[0].freebird
                   }
-                }
-
-                if (freebirds.length > 0) {
-                  message.edit({
-                    content: require('../data/webhooks.json').release.sort(() => .5 - Math.random())[0],
-                    embeds: [{
-                      title: freebirds[0].bird.commonName,
-                      url: `https://squawkoverflow.com/birdypedia/bird/${freebirds[0].bird.code}`,
-                      description: freebirds[0].label,
-                      image: {
-                        url: freebirds[0].image + '#' + freebirds[0].freebird
-                      }
-                    }],
-                    components: [{
-                      type: 1,
-                      components: [{
-                        type: 2,
-                        label: 'Add to Aviary!',
-                        style: 1,
-                        custom_id: `birdypets_catch`,
-                      }]
-                    }]
-                  })
-                }
+                }],
+                components: [{
+                  type: 1,
+                  components: [{
+                    type: 2,
+                    label: 'Add to Aviary!',
+                    style: 1,
+                    custom_id: `birdypets_catch`,
+                  }]
+                }]
               })
-            })
-          }, 1000 * 60); // one minute
+            }
+          })
         });
       });
       break;

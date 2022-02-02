@@ -20,6 +20,7 @@ module.exports = async function(interaction) {
     let preview = {};
     let eggs = [];
     let notEggs = [];
+    let prct = 0;
 
     for (let adjective of adjectives) {
       adjective = adjective.toLowerCase().replace(/[^a-z]+/g, '');
@@ -55,6 +56,8 @@ module.exports = async function(interaction) {
               adjective: adjective,
               id: id,
               member: member ? member.id : interaction.user.id
+            }).then((count) => {
+              prct = Math.max(prct, (count.art / count.total * 100));
             });
           });
         } else {
@@ -72,6 +75,12 @@ module.exports = async function(interaction) {
             url: `https://cdn.discordapp.com/emojis/${preview.id}.png`
           }
         }]
+      });
+
+      interaction.guild.channels.fetch('934879009857208320').then((channel) => {
+        channel.edit({
+          topic: `${Math.floor(prct)}% of eggs have non-default art!!`
+        });
       });
     } else {
       interaction.editReply({
