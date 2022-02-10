@@ -10,7 +10,7 @@ const preferences = {
 module.exports = async function(interaction) {
   var memberId = interaction.targetId;
 
-  API.call('/member/', 'GET', {
+  API.call('/member', 'GET', {
     id: memberId
   }).then((member) => {
     var preferredPronouns = Object.keys(pronouns).map((pronoun) => {

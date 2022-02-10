@@ -291,6 +291,73 @@
       "id": "936345747815792640",
       "type": 1,
       "permission": true
-    }]
+    }],
+    "global": false
+  },
+  {
+    "name": "suggest",
+    "description": "Submit a suggestion to seppukawaii",
+    "options": [{
+      "name": "other",
+      "description": "Any suggestion that doesn't fit into any other category.",
+      "type": 1,
+      "options": [{
+        "name": "suggestion",
+        "description": "What is your suggestion?",
+        "type": 3,
+        "required": true
+      }]
+    }, {
+      "name": "bordle-add",
+      "description": "Suggest a new word for Bordle.",
+      "type": 1,
+      "options": [{
+        "name": "word",
+        "description": "What word do you want to suggest?",
+        "type": 3,
+        "required": true
+      }]
+    }, {
+      "name": "bordle-remove",
+      "description": "Suggest removing a word from Bordle.",
+      "type": 1,
+      "options": [{
+        "name": "word",
+        "description": "What word do you want removed?",
+        "type": 3,
+        "required": true
+      }]
+    }, {
+      "name": "egg-add",
+      "description": "Suggest a new egg for a bird.",
+      "type": 1,
+      "options": [{
+        "name": "bird",
+        "description": "Which bird?",
+        "type": 3,
+        "required": true
+      }, {
+        "name": "egg",
+        "description": "Which egg(s) should this bird hatch from?",
+        "type": 3,
+        "required": true
+      }]
+    }, {
+      "name": "egg-remove",
+      "description": "Suggest removing a bird from an egg.",
+      "type": 1,
+      "options": [{
+        "name": "bird",
+        "description": "Which bird?",
+        "type": 3,
+        "required": true
+      }, {
+        "name": "egg",
+        "description": "Which egg(s) should this bird not hatch from?",
+        "type": 3,
+        "required": true
+      }]
+    }],
+    "global": false
   }
 ]

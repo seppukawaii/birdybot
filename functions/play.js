@@ -17,11 +17,19 @@ const DB = new Datastore({
 });
 
 module.exports = function(interaction) {
-  if (interaction.isMessageComponent()) {
-    if (interaction.message) {
-      let game = require(`../games/${interaction.customId.split('-').shift()}.js`);
+  if (interaction.type == 'REPLY' || interaction.isMessageComponent()) {
+    if (interaction.type == 'REPLY') {
+      var game = require('../games/' + interaction.message.content.split("\r\n").shift().toLowerCase().replace(/[^a-z]+/g, '') + '.js');
+	    var user = interaction.reply.author.id;
+    } else if (interaction.message) {
+      var game = require(`../games/${interaction.customId.split('-').shift()}.js`);
+	    var user = interaction.user.id;
+    } else {
+      return false;
+    }
 
-      DB.get(DB.key(['Games', interaction.message.id])).then(([currentState]) => {
+    DB.get(DB.key(['Games', interaction.message.id])).then(([currentState]) => {
+      if (!currentState || !currentState.over) {
         game.process(interaction, currentState).then((gameState) => {
           DB.upsert({
             key: DB.key(['Games', interaction.message.id]),
@@ -32,11 +40,13 @@ module.exports = function(interaction) {
             var friendship = Math.round(Math.random() * (5 - 1) + 1);
 
             API.call('_birdybuddy', 'POST', {
-              loggedInUser: interaction.user.id,
+              loggedInUser: user,
               friendship: friendship,
             }).then((birdyBuddy) => {
               if (birdyBuddy) {
-                if (interaction.member) {
+                if (interaction.member || interaction.reply?.member) {
+			var channel = interaction.type == 'REPLY' ? interaction.reply.channel : interaction.channel;
+
                   Jimp.read(birdyBuddy.variant.image).then((image) => {
                     var px = Math.max(image.bitmap.height, image.bitmap.width);
 
@@ -49,14 +59,14 @@ module.exports = function(interaction) {
 
                       background.composite(image, (px - image.bitmap.width) / 2, (px - image.bitmap.height) / 2)
                         .getBase64(Jimp[`MIME_${mimes[birdyBuddy.variant.filetype]}`], (err, img) => {
-                          interaction.channel.createWebhook(birdyBuddy.nickname || birdyBuddy.bird.commonName, {
+                          channel.createWebhook(birdyBuddy.nickname || birdyBuddy.bird.commonName, {
                             avatar: img
                           }).then((webhook) => {
                             webhook.send({
                               content: `That was fun!  Let's play again!!`,
                               embeds: [
                                 new MessageEmbed()
-                                .setTitle(`+${friendship} Friendship`)
+                                .setTitle(`+${friendship} Friendship` + (birdyBuddy.friendship >= 100 ? '(MAX)' : ''))
                                 .setDescription(birdyBuddy.friendshipMeter + ' ')
                                 .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy.id}`)
                               ]
@@ -83,11 +93,22 @@ module.exports = function(interaction) {
               }
             });
           }
+
         });
-      });
-    } else {
-      console.log(interaction);
-    }
+      } else {
+        if (interaction.type == 'REPLY') {
+          interaction.reply.reply({
+            content: 'That game is over, but you can /play a new one!',
+            ephemeral: true
+          });
+        } else {
+          interaction.followUp({
+            content: 'That game is over, but you can /play a new one!',
+            ephemeral: true
+          });
+        }
+      }
+    });
   } else {
     var components = [];
     var games = [{
@@ -107,6 +128,12 @@ module.exports = function(interaction) {
       label: "Birdsweeper",
       emoji: {
         name: '🔍'
+      }
+    }, {
+      id: 'bordle',
+      label: 'Bordle',
+      emoji: {
+        name: '🔠'
       }
     }];
     /*{

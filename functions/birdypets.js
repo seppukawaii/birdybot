@@ -65,7 +65,14 @@ module.exports = async function(interaction) {
         freebird: freebird,
         variant: variant
       }).then(async (birdypet) => {
-	      interaction.message.delete();
+        if (birdypet.error) {
+          interaction.followUp({
+            content: birdypet.error,
+            ephemeral: true
+          });
+        }
+
+        interaction.message.delete();
 
         API.call('freebirds', 'GET', {
           limit: 5
@@ -73,13 +80,13 @@ module.exports = async function(interaction) {
           var freebirds = response.results;
 
           await interaction.channel.messages.fetch({
-            limit: 100
+            limit: 10
           }).then((messages) => {
-            for (let msg of messages) {
-              if (msg.components && msg.components[0][0].label == 'Add to Aviary!') {
-                freebirds = freebirds.filter((freebird) => freebird.id != msg.embeds[0].url.split('#').pop());
+            messages.each((msg) => {
+              if (msg.components && msg.components[0].components[0].label == 'Add to Aviary!') {
+                freebirds = freebirds.filter((freebird) => freebird.id != msg.embeds[0].image.url.split('#').pop());
               }
-            }
+            });
 
             if (freebirds.length > 0) {
               interaction.channel.send({

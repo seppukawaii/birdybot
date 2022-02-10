@@ -7,7 +7,8 @@ const {
 } = require('discord.js');
 
 const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES]
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES],
+  partials: ["CHANNEL"]
 });
 
 var reconnectCooldown = 0;
@@ -83,10 +84,24 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client.on('messageCreate', (message) => {
-  if (message.guild.id == "863864246835216464" && message.author.id == "121294882861088771" && message.content.startsWith('!')) {
-    var command = message.content.split(' ').shift().replace('!', '');
+  if (message.author.id != client.user.id) {
+    if (message.guild?.id == "863864246835216464" && message.author.id == "121294882861088771" && message.content.startsWith('!')) {
+      var command = message.content.split(' ').shift().replace('!', '');
 
-    require(`./functions/${command}.js`)(message);
+      require(`./functions/${command}.js`)(message);
+    } else if (message.mentions.repliedUser?.id == client.user.id) {
+      message.channel.messages.fetch(message.reference.messageId).then((original) => {
+        if (original.interaction.commandName == 'play' && original.interaction.user.id == message.author.id) {
+          let interaction = original.interaction;
+
+          interaction.type = 'REPLY';
+          interaction.reply = message;
+          interaction.message = original;
+
+          require(`./functions/play.js`)(interaction);
+        }
+      });
+    }
   }
 });
 
