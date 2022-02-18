@@ -1,6 +1,5 @@
 const secrets = require('./secrets.json');
 const commands = require('./data/commands.json');
-const os = require('os-utils');
 
 const {
   Client,
@@ -68,10 +67,6 @@ client.on('interactionCreate', async (interaction) => {
       }
     }
 
-    os.cpuUsage(function(v){
-      console.log(`${interaction.commandName} | CPU Usage (%): ${v}`);
-    });
-
     require(`./functions/${interaction.commandName}.js`)(interaction);
   } catch (err) {
     console.error(err);
@@ -79,10 +74,6 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client.on('messageCreate', (message) => {
-  os.cpuUsage(function(v){
-    console.log('Message Create Event | CPU Usage (%): ' + v);
-  });
-
   if (message.author.id != client.user.id) {
     if (message.guild?.id == "863864246835216464" && message.author.id == "121294882861088771" && message.content.startsWith('!')) {
       var command = message.content.split(' ').shift().replace('!', '');

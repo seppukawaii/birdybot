@@ -123,13 +123,13 @@ module.exports = function(interaction) {
       emoji: {
         name: '⁉️'
       }
-    }, /*{
+    }, {
       id: "birdsweeper",
       label: "Birdsweeper",
       emoji: {
         name: '🔍'
       }
-    },*/ {
+    }, {
       id: 'bordle',
       label: 'Bordle',
       emoji: {
@@ -144,7 +144,7 @@ module.exports = function(interaction) {
       }
     }];*/
 
-    if (interaction.member?.id == "121294882861088771") {}
+    if (interaction.member?.id == "121294882861088771") {
 
     for (let i = 0, len = games.length; i < len; i++) {
       if (i % 5 == 0) {

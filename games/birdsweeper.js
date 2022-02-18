@@ -115,7 +115,7 @@ module.exports = {
           clicked.state = 'revealed';
 
           if (clicked.touches == 0) {
-            this.revealAdjacentTiles(currentState, interaction.customId.split('-').pop() * 1);
+            await this.revealAdjacentTiles(currentState, interaction.customId.split('-').pop() * 1);
           }
 
           if (currentState.board.filter((tile) => !tile.bird && tile.state == 'hidden').length == 0) {
@@ -127,61 +127,78 @@ module.exports = {
       return resolve(currentState);
     });
   },
-  revealAdjacentTiles: function(currentState, i) {
-    let tile = currentState.board[i];
+  revealAdjacentTiles: function(currentState, i, skip = []) {
+    return new Promise((resolve, reject) => {
+      let tile = currentState.board[i];
+      let promises = [];
 
-    let dirs = {
-      north: i > 4,
-      south: i < 20,
-      east: (i + 1) % 5 != 0,
-      west: i % 5 != 0
-    };
+      skip = skip.length > 0 ? skip : [i];
 
-    if (dirs.north) {
-      this.revealTile(currentState, i - 5);
+      let dirs = {
+        north: i > 4,
+        south: i < 20,
+        east: (i + 1) % 5 != 0,
+        west: i % 5 != 0
+      };
 
-      if (dirs.east) {
-        this.revealTile(currentState, i - 4);
-      }
+      if (dirs.north) {
+        promises.push(this.revealTile(currentState, i - 5, skip));
+        skip.push(i - 5);
 
-      if (dirs.west) {
-        this.revealTile(currentState, i - 6);
-      }
-    }
+        if (dirs.east) {
+          promises.push(this.revealTile(currentState, i - 4, skip));
+          skip.push(i - 4);
+        }
 
-    if (dirs.south) {
-      this.revealTile(currentState, i + 5);
-
-      if (dirs.east) {
-        this.revealTile(currentState, i + 6);
-      }
-
-      if (dirs.west) {
-        this.revealTile(currentState, i + 4);
-      }
-    }
-
-    if (dirs.east) {
-      this.revealTile(currentState, i + 1);
-    }
-
-    if (dirs.west) {
-      this.revealTile(currentState, i - 1);
-    }
-  },
-
-  revealTile: function(currentState, i) {
-    if (currentState.board[i]) {
-      if (currentState.board[i].state == 'hidden') {
-        currentState.board[i].state = 'revealed';
-
-        if (currentState.board[i].touches == 0) {
-          this.revealAdjacentTiles(currentState, i);
+        if (dirs.west) {
+          promises.push(this.revealTile(currentState, i - 6, skip));
+          skip.push(i - 6);
         }
       }
-    } else {
-      console.log('cannot reveal', i);
-    }
+
+      if (dirs.south) {
+        promises.push(this.revealTile(currentState, i + 5, skip));
+        skip.push(i + 5);
+
+        if (dirs.east) {
+          promises.push(this.revealTile(currentState, i + 6, skip));
+          skip.push(i + 6);
+        }
+
+        if (dirs.west) {
+          promises.push(this.revealTile(currentState, i + 4, skip));
+          skip.push(i + 4);
+        }
+      }
+
+      if (dirs.east) {
+        promises.push(this.revealTile(currentState, i + 1, skip));
+        skip.push(i + 1);
+      }
+
+      if (dirs.west) {
+        promises.push(this.revealTile(currentState, i - 1, skip));
+        skip.push(i - 1);
+      }
+
+      Promise.all(promises).then(resolve);
+    });
+  },
+
+  revealTile: function(currentState, i, skip) {
+    return new Promise(async (resolve, reject) => {
+      if (currentState.board[i]) {
+        if (currentState.board[i].state == 'hidden') {
+          currentState.board[i].state = 'revealed';
+
+          if (currentState.board[i].touches == 0 && !skip.includes(i)) {
+            await this.revealAdjacentTiles(currentState, i);
+          }
+        }
+      }
+
+      resolve();
+    });
   },
   print: function(interaction, gameState, disabled = false) {
     return new Promise((resolve, reject) => {
