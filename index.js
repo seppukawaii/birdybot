@@ -1,5 +1,6 @@
 const secrets = require('./secrets.json');
 const commands = require('./data/commands.json');
+const os = require('os-utils');
 
 const {
   Client,
@@ -14,16 +15,6 @@ const client = new Client({
 var reconnectCooldown = 0;
 
 client.login(secrets.DISCORD.BOT_TOKEN);
-
-client.on('disconnect', () => {
-  reconnectCooldown += 1000;
-
-  console.log(`Disconnectd.  Reconnecting in ${reconnectCooldown / 1000} seconds...`);
-
-  setTimeout(function() {
-    client.login(secrets.DISCORD.BOT_TOKEN);
-  }, reconnectCooldown);
-});
 
 client.on('interactionCreate', async (interaction) => {
   try {
@@ -77,6 +68,10 @@ client.on('interactionCreate', async (interaction) => {
       }
     }
 
+    os.cpuUsage(function(v){
+      console.log(`${interaction.commandName} | CPU Usage (%): ${v}`);
+    });
+
     require(`./functions/${interaction.commandName}.js`)(interaction);
   } catch (err) {
     console.error(err);
@@ -84,6 +79,10 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client.on('messageCreate', (message) => {
+  os.cpuUsage(function(v){
+    console.log('Message Create Event | CPU Usage (%): ' + v);
+  });
+
   if (message.author.id != client.user.id) {
     if (message.guild?.id == "863864246835216464" && message.author.id == "121294882861088771" && message.content.startsWith('!')) {
       var command = message.content.split(' ').shift().replace('!', '');

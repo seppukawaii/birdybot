@@ -38,26 +38,32 @@ module.exports = async function(interaction) {
               await existing.delete();
             }
 
-            let id = await guild.emojis.create(url, adjective).then((emoji) => emoji.id);
+            await guild.emojis.create(url, adjective).then(async (emoji) => {
+              preview = {
+                name: adjective,
+                id: emoji.id
+              };
 
-            preview = {
-              name: adjective,
-              id: id
-            };
+              await DB.save({
+                key: DB.key(['Eggs', adjective]),
+                data: {
+                  id: emoji.id
+                }
+              });
 
-            await DB.save({
-              key: DB.key(['Eggs', adjective]),
-              data: {
-                id: id
-              }
-            });
+              await API.call('_egg', 'POST', {
+                adjective: adjective,
+                id: emoji.id,
+                member: member ? member.id : interaction.user.id
+              }).then((count) => {
+                prct = Math.max(prct, (count.art / count.total * 100));
+              });
+            }).catch((err) => {
+              interaction.editReply({
+                content: err.message
+              });
 
-            await API.call('_egg', 'POST', {
-              adjective: adjective,
-              id: id,
-              member: member ? member.id : interaction.user.id
-            }).then((count) => {
-              prct = Math.max(prct, (count.art / count.total * 100));
+              throw err;
             });
           });
         } else {

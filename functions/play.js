@@ -123,13 +123,13 @@ module.exports = function(interaction) {
       emoji: {
         name: '⁉️'
       }
-    }, {
+    }, /*{
       id: "birdsweeper",
       label: "Birdsweeper",
       emoji: {
         name: '🔍'
       }
-    }, {
+    },*/ {
       id: 'bordle',
       label: 'Bordle',
       emoji: {

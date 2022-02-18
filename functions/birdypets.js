@@ -83,7 +83,7 @@ module.exports = async function(interaction) {
             limit: 10
           }).then((messages) => {
             messages.each((msg) => {
-              if (msg.components && msg.components[0].components[0].label == 'Add to Aviary!') {
+              if (msg.components.length > 0 && msg.components[0].components[0].label == 'Add to Aviary!') {
                 freebirds = freebirds.filter((freebird) => freebird.id != msg.embeds[0].image.url.split('#').pop());
               }
             });

@@ -43,7 +43,7 @@ module.exports = {
 
         currentState.guesses.push(guess);
 
-        if (interaction.member) {
+        if (interaction.member || interaction.message.guildId) {
           interaction.reply.delete();
         }
       }
