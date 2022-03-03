@@ -10,6 +10,7 @@ const {
 } = require('discord.js');
 
 module.exports = {
+	name: 'What the BIRD?!',
   process: function(interaction, currentState) {
     return new Promise((resolve, reject) => {
       if (currentState) {
@@ -76,7 +77,9 @@ module.exports = {
             }),
             round: "order"
           });
-        });
+        }).catch( (err) => {
+		resolve(this.setup(interaction));
+	});
       });
     });
   },

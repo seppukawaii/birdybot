@@ -19,6 +19,7 @@ const birdMoji = [
 ];
 
 module.exports = {
+	name: 'Memory',
   process: function(interaction, currentState) {
     return new Promise((resolve, reject) => {
       if (currentState) {

@@ -9,6 +9,7 @@ const {
 } = require('discord.js');
 
 module.exports = {
+	name: 'Bordle',
   process: function(interaction, currentState) {
     return new Promise((resolve, reject) => {
       if (currentState) {

@@ -51,7 +51,7 @@ module.exports = async function(message) {
 
         for (var [id, member] of message.mentions.members) {
           API.call('collect', 'POST', {
-            loggedInUser: member.id,
+		  loggedInUser: { auth : 'discord', token : member.id },
             variant: illustration.id
           });
         }

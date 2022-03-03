@@ -101,6 +101,8 @@ client.on('error', (err) => {
 
 client.on('ready', async () => {
   console.log(`Birdy is online!`);
+
+  client.user.setActivity('SQUAWKoverflow', { type: 'PLAYING', url: 'https://squawkoverflow.com' });
 });
 
 module.exports = client;

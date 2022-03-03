@@ -52,7 +52,7 @@ module.exports = async function(interaction) {
         member.pronouns[pronoun] = newState;
 
         API.call('member', 'PUT', {
-          loggedInUser: memberId,
+		loggedInUser: { auth : 'discord', token : memberId },
           createIfNotExists: {
 		  pronouns : {}
           },

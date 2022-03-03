@@ -1,5 +1,6 @@
 const API = require('../helpers/api.js');
-const opengraph = require('open-graph');
+const request = require('request');
+const cheerio = require('cheerio');
 
 module.exports = async function(interaction) {
   var taxonomy = interaction.options.getString('taxonomy');
@@ -16,7 +17,14 @@ module.exports = async function(interaction) {
     var bird = await API.call('birds', 'GET');;
   }
 
-  opengraph(`https://ebird.org/species/${bird.code}`, (err, meta) => {
+  request({
+    url: `https://ebird.org/species/${bird.code}`,
+    encoding: 'utf8',
+    gzip: true,
+    jar: true
+  }, function(err, res, body) {
+    var $ = cheerio.load(body);
+
     response.content += `<https://ebird.org/species/${bird.code}>`;
 
     response.embeds = [{
@@ -24,9 +32,9 @@ module.exports = async function(interaction) {
       author: {
         name: bird.scientificName
       },
-      description: meta.description.trim(),
+      description: $('meta[property="og:description"]').attr('content'),
       image: {
-        url: meta.image.url
+        url: $('meta[property="og:image"]').attr('content')
       },
       url: `https://ebird.org/species/${bird.code}`
     }];

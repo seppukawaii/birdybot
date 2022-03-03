@@ -42,10 +42,7 @@ module.exports = async function(interaction) {
           url: `https://ebird.org/species/${bird.code}`,
           encoding: 'utf8',
           gzip: true,
-          jar: true,
-          headers: {
-            'User-Agent': 'NodeOpenGraphCrawler (https://github.com/samholmes/node-open-graph)'
-          }
+          jar: true
         }, function(err, res, body) {
           var $ = cheerio.load(body);
 

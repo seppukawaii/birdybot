@@ -11,7 +11,10 @@ const DB = new Datastore({
 
 module.exports = function(interaction) {
   API.call('hatch', "GET", {
-      loggedInUser: interaction.user.id,
+      loggedInUser: {
+        auth: 'discord',
+        token: interaction.user.id
+      },
     }).then(async (response) => {
       let eggs = [];
 

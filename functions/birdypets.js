@@ -16,7 +16,7 @@ module.exports = async function(interaction) {
       var eggy = interaction.message.content.match(/the (.*) egg/gm)[0];
 
       API.call('collect', "POST", {
-        loggedInUser: interaction.user.id,
+	      loggedInUser: { auth: 'discord', token : interaction.user.id },
         variant: variant,
         adjective: eggy.split(' ')[1]
       }).then(async (birdypet) => {
@@ -52,7 +52,7 @@ module.exports = async function(interaction) {
       });
 
       API.call('release', 'POST', {
-        loggedInUser: memberId,
+	      loggedInUser: { auth: 'discord', token : memberId },
         variant: variant
       });
 
@@ -61,7 +61,7 @@ module.exports = async function(interaction) {
       let freebird = interaction.message.embeds[0].image?.url.split('#').pop();
 
       API.call('collect', "POST", {
-        loggedInUser: interaction.user.id,
+	      loggedInUser: { auth: 'discord', token : interaction.user.id },
         freebird: freebird,
         variant: variant
       }).then(async (birdypet) => {

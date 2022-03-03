@@ -20,16 +20,22 @@ module.exports = function(interaction) {
   if (interaction.type == 'REPLY' || interaction.isMessageComponent()) {
     if (interaction.type == 'REPLY') {
       var game = require('../games/' + interaction.message.content.split("\r\n").shift().toLowerCase().replace(/[^a-z]+/g, '') + '.js');
-	    var user = interaction.reply.author.id;
+      var user = interaction.reply.author.id;
     } else if (interaction.message) {
       var game = require(`../games/${interaction.customId.split('-').shift()}.js`);
-	    var user = interaction.user.id;
+      var user = interaction.user.id;
     } else {
       return false;
     }
 
     DB.get(DB.key(['Games', interaction.message.id])).then(([currentState]) => {
       if (!currentState || !currentState.over) {
+        if (!currentState && (interaction.member || interaction.reply?.member)) {
+          interaction.client.user.setActivity(game.name, {
+            type: 'PLAYING'
+          });
+        }
+
         game.process(interaction, currentState).then((gameState) => {
           DB.upsert({
             key: DB.key(['Games', interaction.message.id]),
@@ -39,13 +45,17 @@ module.exports = function(interaction) {
           if (gameState.over) {
             var friendship = Math.round(Math.random() * (5 - 1) + 1);
 
+            interaction.client.user.setActivity('SQUAWKoverflow', {
+              type: 'PLAYING'
+            });
+
             API.call('_birdybuddy', 'POST', {
-              loggedInUser: user,
+		    loggedInUser: { auth : 'discord', token : user },
               friendship: friendship,
             }).then((birdyBuddy) => {
               if (birdyBuddy) {
                 if (interaction.member || interaction.reply?.member) {
-			var channel = interaction.type == 'REPLY' ? interaction.reply.channel : interaction.channel;
+                  var channel = interaction.type == 'REPLY' ? interaction.reply.channel : interaction.channel;
 
                   Jimp.read(birdyBuddy.variant.image).then((image) => {
                     var px = Math.max(image.bitmap.height, image.bitmap.width);
@@ -136,15 +146,8 @@ module.exports = function(interaction) {
         name: '🔠'
       }
     }];
-    /*{
-      id: "trickortweet",
-      label: "Trick or Tweet",
-      emoji: {
-        name: '🎃'
-      }
-    }];*/
 
-    if (interaction.member?.id == "121294882861088771") {
+    if (interaction.member?.id == "121294882861088771") {}
 
     for (let i = 0, len = games.length; i < len; i++) {
       if (i % 5 == 0) {

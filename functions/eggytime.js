@@ -5,34 +5,34 @@ module.exports = async function(interaction) {
   const egg = interaction.customId;
 
   API.call('hatch', 'POST', {
-    loggedInUser: memberId,
+	  loggedInUser: { auth: 'discord', token : memberId },
     egg: egg
-  }).then(async (birdypet) => {
+  }).then(async (bird) => {
 	  var details = [];
 
-	  if (birdypet.bird.owned > 1) {
+	  if (bird.owned > 1) {
 		  details.push('✅✅ You have more than one of this species');
 	  }
-	  else if (birdypet.bird.owned == 1) {
+	  else if (bird.owned == 1) {
 		  details.push('✅ You have this species');
 	  }
 
-	  if (birdypet.bird.wishlisted == 2) {
+	  if (bird.wishlisted == 2) {
 		  details.push('🌟 You need this bird!');
 	  }
-	  else if (birdypet.bird.wishlisted == 1) {
+	  else if (bird.wishlisted == 1) {
 		  details.push('❤️ You want this bird!');
 	  }
 
     interaction.editReply({
-      content: `You hatched the ${egg} egg to discover the **${birdypet.bird.commonName}** inside!  Do you want to keep it or release it into the wild?`,
+      content: `You hatched the ${egg} egg to discover the **${bird.commonName}** inside!  Do you want to keep it or release it into the wild?`,
       ephemeral: true,
       "embeds": [{
-        "title": birdypet.bird.commonName,
-        "url": `https://squawkoverflow.com/birdypedia/bird/${birdypet.bird.code}`,
+        "title": bird.commonName,
+        "url": `https://squawkoverflow.com/birdypedia/bird/${bird.code}`,
         "description": details.join("\r\n"),
         "image": {
-          "url": birdypet.image
+          "url": bird.variants[0].image
         }
       }],
       "components": [{

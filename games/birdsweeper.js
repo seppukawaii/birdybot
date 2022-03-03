@@ -32,6 +32,7 @@ const birdMoji = [
 ];
 
 module.exports = {
+	name: 'Birdsweeper',
   process: function(interaction, currentState) {
     return new Promise((resolve, reject) => {
       if (currentState) {
@@ -104,9 +105,9 @@ module.exports = {
       if (clicked.state == "hidden") {
         if (clicked.bird) {
           if (currentState.board.filter((tile) => tile.state == 'revealed').length == 0) {
-            currentSate = await this.setup(interaction);
+            currentState = await this.setup(interaction);
 
-            this.play(interaction, currentState);
+            return resolve(this.play(interaction, currentState));
           } else {
             currentState.message = "Oh no!  You spooked the bird away!  Better luck next time...";
             clicked.state = 'oops';
