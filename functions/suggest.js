@@ -5,8 +5,23 @@ const {
 } = require('discord-modals');
 
 module.exports = async function(interaction, client) {
-  console.log(interaction.type);
-  if (interaction.type == 'MODAL_SUBMIT') {
+  if (interaction.type == 'APPLICATION_COMMAND') {
+    const modal = new Modal()
+      .setCustomId('suggest')
+      .setTitle('Suggestion Box')
+      .addComponents(
+        new TextInputComponent()
+        .setCustomId('suggestion')
+        .setStyle('LONG')
+        .setLabel('What is your suggestion?')
+        .setRequired(true)
+      );
+
+    showModal(modal, {
+      client: client,
+      interaction: interaction
+    });
+  } else if (interaction.type == 'MODAL_SUBMIT') {
     await interaction.deferReply({
       ephemeral: true
     })
@@ -29,22 +44,6 @@ module.exports = async function(interaction, client) {
           })
         });
       });
-    });
-  } else {
-    const modal = new Modal()
-      .setCustomId('suggest')
-      .setTitle('Suggestion Box')
-      .addComponents(
-        new TextInputComponent()
-        .setCustomId('suggestion')
-        .setStyle('LONG')
-        .setLabel('What is your suggestion?')
-        .setRequired(true)
-      );
-
-    showModal(modal, {
-      client: client,
-      interaction: interaction
     });
   }
 };
