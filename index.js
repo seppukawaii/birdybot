@@ -11,7 +11,8 @@ const client = new Client({
   partials: ["CHANNEL"]
 });
 
-var reconnectCooldown = 0;
+const discordModals = require('discord-modals');
+discordModals(client);
 
 client.login(secrets.DISCORD.BOT_TOKEN);
 
@@ -60,17 +61,21 @@ client.on('interactionCreate', async (interaction) => {
 
       var command = commands.find((command) => interaction.commandName == command.name);
 
-      if (command) {
+      if (command && !command.doNotAck) {
         await interaction.deferReply({
           ephemeral: command.publicAck ? false : true
         });
       }
     }
 
-    require(`./functions/${interaction.commandName}.js`)(interaction);
+    require(`./functions/${interaction.commandName}.js`)(interaction, client);
   } catch (err) {
     console.error(err);
   }
+});
+
+client.on('modalSubmit', (modal) => {
+  require(`./functions/${modal.customId}.js`)(modal, client);
 });
 
 client.on('messageCreate', (message) => {
@@ -87,6 +92,7 @@ client.on('messageCreate', (message) => {
           interaction.type = 'REPLY';
           interaction.reply = message;
           interaction.message = original;
+          interaction.client = client;
 
           require(`./functions/play.js`)(interaction);
         }
@@ -102,7 +108,10 @@ client.on('error', (err) => {
 client.on('ready', async () => {
   console.log(`Birdy is online!`);
 
-  client.user.setActivity('SQUAWKoverflow', { type: 'PLAYING', url: 'https://squawkoverflow.com' });
+  client.user.setActivity('SQUAWKoverflow', {
+    type: 'PLAYING',
+    url: 'https://squawkoverflow.com'
+  });
 });
 
 module.exports = client;

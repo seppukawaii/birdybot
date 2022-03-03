@@ -45,12 +45,11 @@ module.exports = function(interaction) {
           if (gameState.over) {
             var friendship = Math.round(Math.random() * (5 - 1) + 1);
 
-            interaction.client.user.setActivity('SQUAWKoverflow', {
-              type: 'PLAYING'
-            });
-
             API.call('_birdybuddy', 'POST', {
-		    loggedInUser: { auth : 'discord', token : user },
+              loggedInUser: {
+                auth: 'discord',
+                token: user
+              },
               friendship: friendship,
             }).then((birdyBuddy) => {
               if (birdyBuddy) {
@@ -101,6 +100,10 @@ module.exports = function(interaction) {
                   });
                 }
               }
+
+              interaction.client.user.setActivity('SQUAWKoverflow', {
+                type: 'PLAYING'
+              });
             });
           }
 
