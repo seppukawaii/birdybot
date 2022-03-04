@@ -4,10 +4,10 @@ const {
   showModal
 } = require('discord-modals');
 
-module.exports = async function(interaction, client) {
+module.exports = async function(interaction) {
   if (interaction.type == 'APPLICATION_COMMAND') {
     const modal = new Modal()
-      .setCustomId('suggest')
+      .setCustomId(`suggest_${Date.now()}`)
       .setTitle('Suggestion Box')
       .addComponents(
         new TextInputComponent()
@@ -18,7 +18,7 @@ module.exports = async function(interaction, client) {
       );
 
     showModal(modal, {
-      client: client,
+      client: interaction.client,
       interaction: interaction
     });
   } else if (interaction.type == 'MODAL_SUBMIT') {
@@ -26,7 +26,7 @@ module.exports = async function(interaction, client) {
       ephemeral: true
     })
 
-    client.guilds.fetch('863864246835216464').then((guild) => {
+    interaction.client.guilds.fetch('863864246835216464').then((guild) => {
       guild.members.fetch('121294882861088771').then((seppukawaii) => {
         seppukawaii.send({
           content: ' ',

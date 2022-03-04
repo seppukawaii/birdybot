@@ -12,13 +12,17 @@ const client = new Client({
 });
 
 const discordModals = require('discord-modals');
-discordModals(client);
 
+discordModals(client);
 client.login(secrets.DISCORD.BOT_TOKEN);
 
 client.on('interactionCreate', async (interaction) => {
   try {
-    if (interaction.isMessageComponent()) {
+    if (['birdypets_edit'].includes(interaction.customId)) {
+      let tmp = interaction.customId.split('_');
+      interaction.commandName = tmp.shift();
+      interaction.customId = tmp.join('_');
+    } else if (interaction.isMessageComponent()) {
       let tmp = interaction.customId.split('_');
       interaction.commandName = tmp.shift();
       interaction.customId = tmp.join('_');
@@ -40,7 +44,7 @@ client.on('interactionCreate', async (interaction) => {
         });
 
         await interaction.update({
-          content: interaction.message.content,
+          content: interaction.message.content || " ",
           components: components
         });
       }
@@ -63,19 +67,24 @@ client.on('interactionCreate', async (interaction) => {
 
       if (command && !command.doNotAck) {
         await interaction.deferReply({
-          ephemeral: command.publicAck ? false : true
+          ephemeral: command.publicAck || !interaction.member ? false : true
         });
       }
     }
 
-    require(`./functions/${interaction.commandName}.js`)(interaction, client);
+    require(`./functions/${interaction.commandName}.js`)(interaction);
   } catch (err) {
     console.error(err);
   }
 });
 
 client.on('modalSubmit', (modal) => {
-  require(`./functions/${modal.customId}.js`)(modal, client);
+  let tmp = modal.customId.split('_');
+  modal.commandName = tmp.shift();
+  tmp.pop();
+  modal.customId = tmp.join('_');
+
+  require(`./functions/${modal.commandName}.js`)(modal);
 });
 
 client.on('messageCreate', (message) => {

@@ -33,16 +33,16 @@ module.exports = function(interaction) {
 
         eggs.push({
           type: 2,
-          label: `${egg.adjective} egg` + (egg.hasOwnProperty('numHatched') ? `   (${egg.numHatched}/${egg.numSpecies})` : ''),
+          label: `${egg.adjective}` + (egg.hasOwnProperty('numHatched') ? `   (${egg.numHatched}/${egg.numSpecies})` : ''),
           style: 2,
-          custom_id: `eggytime_${egg.adjective}`,
+          custom_id: `birdypets/hatched_${egg.adjective}`,
           emoji: emoji
         });
       }
 
       interaction.editReply({
         content: "These eggs are almost ready to hatch!  Which one will you pick?",
-        ephemeral: true,
+	      embeds: [],
         components: [{
           type: 1,
           components: eggs.slice(0, 3).filter((egg) => typeof egg != "undefined")
@@ -55,15 +55,13 @@ module.exports = function(interaction) {
     .catch((err) => {
       if (err.response) {
         interaction.editReply({
-          content: `*You have ${err.response.data.timeUntil} minutes before you can hatch another egg.*`,
-          ephemeral: true
+          content: `*You have ${err.response.data.timeUntil} minutes before you can hatch another egg.*`
         });
       } else {
         console.log(err);
 
         interaction.editReply({
-          content: '*Something went wrong!  Please file a \`/bug\` report.  Sorry for the inconvenience!*',
-          ephemeral: true
+          content: '*Something went wrong!  Please file a \`/bug\` report.  Sorry for the inconvenience!*'
         });
       }
     });
