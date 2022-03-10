@@ -56,8 +56,6 @@ module.exports = {
     return new Promise((resolve, reject) => {
       var content = '**🔠 Bordle 🔠**\r\n\r\n';
       var instructions = 'Try to guess the mystery 5-letter bird word!\r\n\r\n' +
-        '**How To Play**\r\n' +
-        'Reply to this message with your guess.\r\n' +
         '🟩 Green means right letter, right place.\r\n' +
         '🟦 Blue means right letter, wrong place.\r\n' +
         '⬛ Gray means wrong letter.';

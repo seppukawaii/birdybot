@@ -12,6 +12,15 @@ module.exports = async function(interaction) {
       auth: 'discord',
       token: interaction.user.id
     },
+    userData: interaction.member ? {
+      username: interaction.member.displayName,
+      avatar: interaction.member.displayAvatarURL(),
+      serverMember: true
+    } : {
+      username: interaction.user.username,
+      avatar: interaction.user.avatarURL(),
+      serverMember: false
+    },
     variant: variant,
     adjective: eggy.split(' ')[1]
   }).then(async (birdypet) => {

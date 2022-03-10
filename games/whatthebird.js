@@ -10,7 +10,7 @@ const {
 } = require('discord.js');
 
 module.exports = {
-	name: 'What the BIRD?!',
+  name: 'What the BIRD?!',
   process: function(interaction, currentState) {
     return new Promise((resolve, reject) => {
       if (currentState) {
@@ -26,7 +26,7 @@ module.exports = {
   },
   setup: function(interaction) {
     return new Promise((resolve, reject) => {
-      API.call('birds', 'GET').then(async (bird) => {
+      API.call('bird', 'GET').then(async (bird) => {
         var orders = await API.call('orders', 'GET').then((results) => {
           results = results.map((result) => result.name).sort(() => Math.random() - 0.5).slice(0, 5);
 
@@ -77,9 +77,9 @@ module.exports = {
             }),
             round: "order"
           });
-        }).catch( (err) => {
-		resolve(this.setup(interaction));
-	});
+        }).catch((err) => {
+          resolve(this.setup(interaction));
+        });
       });
     });
   },

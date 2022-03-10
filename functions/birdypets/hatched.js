@@ -59,11 +59,12 @@ module.exports = async function(interaction) {
             custom_id: 'birdypets/hatched_selectVariant',
             options: bird.variants.map((variant) => {
               return {
-                label: (variant.label + (variant.label && variant.subspecies ? ' - ' : '') + (variant.subspecies ? `${variant.subspecies} subspecies` : '')),
+                label: (variant.label + (variant.label && variant.subspecies ? ' - ' : '') + (variant.subspecies ? `${variant.subspecies} subspecies` : '')) + ' ',
                 value: variant.id + '.' + variant.filetype,
                 description: '© ' + variant.credit,
-                emoji: bird.variants[0].owned ? {
-                  name: "✔️"
+		      default: bird.variants[0] == variant.id, 
+                emoji: variant.hatched ? {
+                  name: "✅"
                 } : null
               }
             }),

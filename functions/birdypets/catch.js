@@ -9,6 +9,15 @@ module.exports = async function(interaction) {
       auth: 'discord',
       token: interaction.user.id
     },
+    userData: interaction.member ? {
+      username: interaction.member.displayName,
+      avatar: interaction.member.displayAvatarURL(),
+      serverMember: true
+    } : {
+      username: interaction.user.username,
+      avatar: interaction.user.avatarURL(),
+      serverMember: false
+    },
     freebird: freebird,
     variant: variant
   }).then(async (birdypet) => {
@@ -16,6 +25,42 @@ module.exports = async function(interaction) {
       interaction.followUp({
         content: birdypet.error,
         ephemeral: true
+      });
+    } else {
+      interaction.followUp({
+        content: `You added the free bird to your aviary!`,
+        ephemeral: true,
+        embeds: [{
+          title: birdypet.bird.commonName,
+          description: (birdypet.variant.label + (birdypet.variant.label && birdypet.variant.subspecies ? ' - ' : '') + (birdypet.variant.subspecies ? `${birdypet.variant.subspecies} subspecies` : '')) + ' ',
+          image: {
+            url: birdypet.variant.image
+          },
+          url: `https://squawkoverflow.com/birdypet/${birdypet.id}`
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            type: 2,
+            label: 'Nickname & Description',
+            style: 1,
+            custom_id: `birdypets_edit`,
+            emoji: {
+              name: "✏️"
+            }
+          }]
+        }, {
+          type: 1,
+          components: [{
+            type: 2,
+            label: "Hatch Another Egg",
+            style: 1,
+            custom_id: 'hatch',
+            emoji: {
+              name: "🥚"
+            }
+          }]
+        }]
       });
     }
 

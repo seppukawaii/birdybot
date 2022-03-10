@@ -11,14 +11,14 @@ module.exports = async function(interaction) {
     content: ""
   };
 
-  var bird = await API.call('birds', 'GET', {
+  var bird = await API.call('bird', 'GET', {
     taxonomy: taxonomy
   });
 
   if (!bird) {
     response.content = `I couldn't find any matches for \`${taxonomy}\`, so here's a totally random bird.\r\n\r\n`;
 
-    var bird = await API.call('birds', 'GET');;
+    var bird = await API.call('bird', 'GET');
   }
 
   await flickr.photos.search({
