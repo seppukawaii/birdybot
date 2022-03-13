@@ -17,7 +17,7 @@ const DB = new Datastore({
 });
 
 module.exports = function(interaction) {
-  if (interaction.type == 'REPLY' || interaction.isMessageComponent()) {
+  if (interaction.type != 'APPLICATION_COMMAND') {
     if (interaction.type == 'REPLY') {
       var game = require('../games/' + interaction.message.content.split("\r\n").shift().toLowerCase().replace(/[^a-z]+/g, '') + '.js');
       var user = interaction.reply.author.id;

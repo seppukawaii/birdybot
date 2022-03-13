@@ -1,5 +1,6 @@
 const API = require('../helpers/api.js');
 const Chance = require('chance').Chance();
+const axios = require('axios');
 
 const {
   MessageEmbed,
@@ -8,8 +9,14 @@ const {
   WebhookClient
 } = require('discord.js');
 
+const {
+  Modal,
+  TextInputComponent,
+  showModal
+} = require('discord-modals');
+
 module.exports = {
-	name: 'Bordle',
+  name: 'Bordle',
   process: function(interaction, currentState) {
     return new Promise((resolve, reject) => {
       if (currentState) {
@@ -36,17 +43,34 @@ module.exports = {
     });
   },
   play: function(interaction, currentState) {
-    return new Promise((resolve, reject) => {
-      if (interaction.type == 'REPLY') {
-        let guess = interaction.reply.content.trim().toUpperCase().slice(0, 5);
+    return new Promise(async (resolve, reject) => {
+
+      if (interaction.customId == 'bordle-guess') {
+        const modal = new Modal()
+          .setCustomId(`play_bordle_${Date.now()}`)
+          .setTitle('Bordle')
+          .addComponents(
+            new TextInputComponent()
+            .setCustomId('guess')
+            .setStyle('SHORT')
+            .setLabel('What is your guess?')
+            .setMinLength(5)
+            .setMaxLength(5)
+            .setRequired(true)
+          );
+
+        showModal(modal, {
+          client: interaction.client,
+          interaction: interaction
+        });
+      } else if (interaction.type == 'MODAL_SUBMIT') {
+        await interaction.deferReply();
+
+        let guess = interaction.getTextInputValue('guess').trim().toUpperCase();
 
         currentState.over = guess == currentState.word;
 
         currentState.guesses.push(guess);
-
-        if (interaction.member || interaction.message.guildId) {
-          interaction.reply.delete();
-        }
       }
 
       return resolve(currentState);
@@ -60,7 +84,7 @@ module.exports = {
         '🟦 Blue means right letter, wrong place.\r\n' +
         '⬛ Gray means wrong letter.';
 
-      if (interaction.type == 'REPLY') {
+      if (interaction.type == 'MODAL_SUBMIT') {
         var row = 0;
 
         if (gameState.over) {
@@ -109,8 +133,12 @@ module.exports = {
             }
           })
         }).then(() => {
+          axios.delete(`https://discord.com/api/webhooks/${interaction.applicationId}/${interaction.token}/messages/@original`).catch((err) => {});
+
           resolve(gameState);
         });
+      } else if (interaction.customId == 'bordle-guess') {
+        resolve(gameState);
       } else {
         content += instructions;
 
@@ -118,6 +146,18 @@ module.exports = {
           content: content,
           components: []
         }).then(() => {
+          interaction.followUp({
+            content: ' ',
+            components: [{
+              type: 1,
+              components: [{
+                type: 2,
+                style: 2,
+                label: 'Submit Guess',
+                customId: 'play_bordle-guess'
+              }]
+            }]
+          });
           resolve(gameState);
         });
       }

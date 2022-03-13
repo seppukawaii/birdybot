@@ -1,7 +1,7 @@
 const API = require('../helpers/api.js');
 
 module.exports = async function(message) {
-  var members = message.mentions.members.map((member) => member.id);
+  var members = message.mentions.members.map((member) => { return { auth: 'discord', token : member.id} });
   var embeds = [];
   var regex = /\`([^\`]+)\`/;
   var value = null;
@@ -25,7 +25,7 @@ module.exports = async function(message) {
       bugs: value ? value : 1
     });
 
-    members = members.map((member) => `<@${member}>`);
+    members = members.map((member) => `<@${member.token}>`);
 
     if (members.length > 1) {
       members[members.length - 1] = 'and ' + members[members.length - 1];

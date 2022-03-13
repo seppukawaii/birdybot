@@ -32,7 +32,7 @@ module.exports = function(interaction) {
       });
 
       API.call('bug', 'PUT', {
-        members: [interaction.user.id],
+	      members: [{ auth: 'discord', token: interaction.user.id }],
         bugs: 1
       });
 

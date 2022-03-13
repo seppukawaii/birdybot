@@ -27,7 +27,13 @@ client.on('interactionCreate', async (interaction) => {
       interaction.commandName = tmp.shift();
       interaction.customId = tmp.join('_');
 
-      if (interaction.commandName == 'play' && interaction.user.id != interaction.message.interaction.user.id) {
+      if (interaction.commandName == 'play' && interaction.message.interaction == null && interaction.message.reference?.messageId) {
+        interaction.originalMessage = interaction.message;
+        interaction.message = await interaction.message.channel.messages.fetch(interaction.message.reference.messageId);
+        interaction.noUpdate = true;
+      }
+
+      if (interaction.commandName == 'play' && interaction.user.id != interaction.message.interaction?.user.id) {
         return interaction.reply({
           content: "This isn't your game -- but you can /play your own!",
           ephemeral: true
@@ -43,10 +49,12 @@ client.on('interactionCreate', async (interaction) => {
           return actionRow;
         });
 
-        await interaction.update({
-          content: interaction.message.content || " ",
-          components: components
-        });
+        if (!interaction.noUpdate) {
+          await interaction.update({
+            content: interaction.message.content || " ",
+            components: components
+          });
+        }
       }
     } else if (interaction.isContextMenu()) {
       interaction.commandName = interaction.commandName.toLowerCase().replace(/\s/g, '');
@@ -78,13 +86,18 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-client.on('modalSubmit', (modal) => {
-  let tmp = modal.customId.split('_');
-  modal.commandName = tmp.shift();
+client.on('modalSubmit', async (interaction) => {
+  let tmp = interaction.customId.split('_');
+  interaction.commandName = tmp.shift();
   tmp.pop();
-  modal.customId = tmp.join('_');
+  interaction.customId = tmp.join('_');
 
-  require(`./functions/${modal.commandName}.js`)(modal);
+  if (interaction.commandName == 'play' && interaction.message.interaction == null && interaction.message.reference?.messageId) {
+    interaction.originalMessage = interaction.message;
+    interaction.message = await interaction.message.channel.messages.fetch(interaction.message.reference.messageId);
+  }
+
+  require(`./functions/${interaction.commandName}.js`)(interaction);
 });
 
 client.on('messageCreate', (message) => {
