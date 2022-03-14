@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "forever start --uid birdybot index.js",
-    "restart": "forever restart birdybot",
+    "restart": "forever stop birdybot && rm ~/.forever/birdybot.log && npm run start",
     "logs": "cat ../.forever/birdybot.log"
   },
   "author": "",

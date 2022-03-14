@@ -40,9 +40,9 @@ module.exports = function(interaction) {
         });
       }
 
-      interaction.editReply({
+      var message = {
         content: "These eggs are almost ready to hatch!  Which one will you pick?",
-	      embeds: [],
+        embeds: [],
         components: [{
           type: 1,
           components: eggs.slice(0, 3).filter((egg) => typeof egg != "undefined")
@@ -50,7 +50,17 @@ module.exports = function(interaction) {
           type: 1,
           components: eggs.slice(3, 6).filter((egg) => typeof egg != "undefined")
         }]
-      });
+      };
+
+      if (interaction.channel.type == 'DM') {
+        interaction.editReply(message);
+      } else {
+        interaction.editReply({
+          content: "I have sent you a private message with some eggs to make the hatching experience more coherent and uninterrupted by chat messages."
+        });
+
+        interaction.member.send(message);
+      }
     })
     .catch((err) => {
       if (err.response) {

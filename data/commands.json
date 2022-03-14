@@ -297,7 +297,19 @@
   {
     "name": "suggest",
     "description": "Submit a suggestion (don't be shy!)",
-    "doNotAck" : true,
+    "doNotAck": true,
+    "global": false
+  },
+  {
+    "name": "test",
+    "description": "test",
+    "default_permission": false,
+    "permissions": [{
+      "id": "121294882861088771",
+      "type": 2,
+      "permission": true
+    }],
+    "doNotAck": true,
     "global": false
   }
 ]

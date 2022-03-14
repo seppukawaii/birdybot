@@ -16,14 +16,14 @@ const discordModals = require('discord-modals');
 discordModals(client);
 client.login(secrets.DISCORD.BOT_TOKEN);
 
-client.on('interactionCreate', async (interaction) => {
+async function processInteraction(interaction) {
   try {
-    if (['birdypets_edit'].includes(interaction.customId)) {
-      let tmp = interaction.customId.split('_');
-      interaction.commandName = tmp.shift();
-      interaction.customId = tmp.join('_');
-    } else if (interaction.isMessageComponent()) {
-      let tmp = interaction.customId.split('_');
+    if ((interaction.isMessageComponent && interaction.isMessageComponent()) || interaction.type == 'MODAL_SUBMIT') {
+      let tmp = interaction.customId.split('-');
+
+      interaction.noUpdate = interaction.type == 'MODAL_SUBMIT' || (tmp.length > 1 ? tmp.pop() == 'MODAL' : false);
+
+	    tmp = tmp[0].split('_');
       interaction.commandName = tmp.shift();
       interaction.customId = tmp.join('_');
 
@@ -39,38 +39,32 @@ client.on('interactionCreate', async (interaction) => {
           ephemeral: true
         });
       } else {
-        let components = interaction.message.components.map((actionRow) => {
-          actionRow.components = actionRow.components.map((component) => {
-            component.disabled = true;
+        if (interaction.message?.components) {
+          let components = interaction.message.components.map((actionRow) => {
+            actionRow.components = actionRow.components.map((component) => {
+              component.disabled = true;
 
-            return component;
+              return component;
+            });
+
+            return actionRow;
           });
 
-          return actionRow;
-        });
-
-        if (!interaction.noUpdate) {
-          await interaction.update({
-            content: interaction.message.content || " ",
-            components: components
-          });
+          if (!interaction.noUpdate) {
+            await interaction.update({
+              content: interaction.message.content || " ",
+              components: components
+            });
+          }
         }
       }
-    } else if (interaction.isContextMenu()) {
+    } else if (interaction.isContextMenu && interaction.isContextMenu()) {
       interaction.commandName = interaction.commandName.toLowerCase().replace(/\s/g, '');
 
       await interaction.deferReply({
         ephemeral: true
       });
     } else {
-      let commandNames = ["submit", "remove", "shuffle"];
-
-      for (let commandName of commandNames) {
-        if (interaction.commandName.endsWith(commandName)) {
-          interaction.commandName = commandName;
-        }
-      }
-
       var command = commands.find((command) => interaction.commandName == command.name);
 
       if (command && !command.doNotAck) {
@@ -84,21 +78,10 @@ client.on('interactionCreate', async (interaction) => {
   } catch (err) {
     console.error(err);
   }
-});
+}
 
-client.on('modalSubmit', async (interaction) => {
-  let tmp = interaction.customId.split('_');
-  interaction.commandName = tmp.shift();
-  tmp.pop();
-  interaction.customId = tmp.join('_');
-
-  if (interaction.commandName == 'play' && interaction.message.interaction == null && interaction.message.reference?.messageId) {
-    interaction.originalMessage = interaction.message;
-    interaction.message = await interaction.message.channel.messages.fetch(interaction.message.reference.messageId);
-  }
-
-  require(`./functions/${interaction.commandName}.js`)(interaction);
-});
+client.on('interactionCreate', processInteraction);
+client.on('modalSubmit', processInteraction);
 
 client.on('messageCreate', (message) => {
   if (message.author.id != client.user.id) {

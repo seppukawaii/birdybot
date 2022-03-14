@@ -47,7 +47,7 @@ module.exports = {
 
       if (interaction.customId == 'bordle-guess') {
         const modal = new Modal()
-          .setCustomId(`play_bordle_${Date.now()}`)
+          .setCustomId(`play_bordle-${Date.now()}`)
           .setTitle('Bordle')
           .addComponents(
             new TextInputComponent()

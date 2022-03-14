@@ -15,7 +15,7 @@ module.exports = async function(interaction) {
       id: birdypet
     }).then((birdypet) => {
       const modal = new Modal()
-        .setCustomId(`birdypets_edit_${Date.now()}`)
+        .setCustomId(`birdypets_edit-${birdypet.id}`)
         .setTitle('Edit BirdyPet')
         .addComponents(
           new TextInputComponent()
@@ -23,7 +23,6 @@ module.exports = async function(interaction) {
           .setStyle('SHORT')
           .setLabel('Nickname')
           .setDefaultValue(birdypet.nickname || "")
-          .setRequired(false)
         )
         .addComponents(
           new TextInputComponent()
@@ -31,18 +30,19 @@ module.exports = async function(interaction) {
           .setStyle('LONG')
           .setLabel('Description')
           .setDefaultValue(birdypet.description || "")
-          .setRequired(false)
         );
 
       showModal(modal, {
         client: interaction.client,
         interaction: interaction
       }).catch((err) => {
-	      console.log(err);
+        console.log(err);
       });
     });
   } else if (interaction.type == 'MODAL_SUBMIT') {
-    await interaction.deferReply();
+    await interaction.reply({
+      content: '*Saving changes...*'
+    });
 
     await axios.patch(`https://discord.com/api/webhooks/${interaction.applicationId}/${interaction.token}/messages/${interaction.message.id}`, {
       flags: 64,

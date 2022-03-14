@@ -40,7 +40,7 @@ module.exports = async function(interaction) {
           type: 2,
           label: 'Nickname & Description',
           style: 1,
-          custom_id: `birdypets_edit`,
+          custom_id: `birdypets/edit-MODAL`,
           emoji: {
             name: "✏️"
           }
