@@ -22,7 +22,7 @@ module.exports = function(interaction) {
       var game = require('../games/' + interaction.message.content.split("\r\n").shift().toLowerCase().replace(/[^a-z]+/g, '') + '.js');
       var user = interaction.reply.author.id;
     } else if (interaction.message) {
-      var game = require(`../games/${interaction.customId.split('-').shift()}.js`);
+      var game = require(`../games/${interaction.customId.split('_').shift()}.js`);
       var user = interaction.user.id;
     } else {
       return false;
