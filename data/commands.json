@@ -54,13 +54,7 @@
   {
     "name": "bug",
     "description": "Submit a bug report",
-    "publicAck": true,
-    "options": [{
-      "name": "report",
-      "description": "What happened?",
-      "type": 3,
-      "required": true
-    }],
+    "doNotAck": true,
     "global": false
   },
   {
@@ -121,32 +115,10 @@
     "help": {
       "group": "Server",
       "description": [
-        "Change your role and/or color.",
-        "name  : The name of the role you want to use",
-        "color : Either a hex color or [one of the color names Discord provides](https://git.io/J0qzI)"
+        "Change your role and/or color."
       ]
     },
-    "options": [{
-      "name": "name",
-      "description": "What do you want your role name to be?",
-      "type": 1,
-      "options": [{
-        "name": "name",
-        "description": "What do you want your role name to be?",
-        "type": 3,
-        "required": true
-      }]
-    }, {
-      "name": "color",
-      "description": "The color you want to use",
-      "type": 1,
-      "options": [{
-        "name": "color",
-        "description": "The color you want to use",
-        "type": 3,
-        "required": true
-      }]
-    }],
+    "doNotAck": true,
     "global": false
   },
   {

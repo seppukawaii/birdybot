@@ -85,7 +85,7 @@ module.exports = {
   },
   play: function(interaction, currentState) {
     return new Promise((resolve, reject) => {
-      var clicked = currentState[currentState.round][interaction.customId.split('-').pop()];
+      var clicked = currentState[currentState.round][interaction.customId.split('_').pop()];
 
       if (!clicked.disabled) {
         if (clicked.label == currentState.bird[currentState.round]) {
@@ -130,7 +130,7 @@ module.exports = {
             type: 2,
             style: button.style,
             label: button.label,
-            customId: `play_whatthebird-${row}-${i}`,
+            customId: `play_whatthebird_${row}_${i}`,
             disabled: disabled ? true : button.disabled
           }));
         }

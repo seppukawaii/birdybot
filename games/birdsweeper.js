@@ -100,7 +100,7 @@ module.exports = {
   },
   play: function(interaction, currentState) {
     return new Promise(async (resolve, reject) => {
-      var clicked = currentState.board[interaction.customId.split('-').pop()];
+      var clicked = currentState.board[interaction.customId.split('_').pop()];
 
       if (clicked.state == "hidden") {
         if (clicked.bird) {
@@ -116,7 +116,7 @@ module.exports = {
           clicked.state = 'revealed';
 
           if (clicked.touches == 0) {
-            await this.revealAdjacentTiles(currentState, interaction.customId.split('-').pop() * 1);
+            await this.revealAdjacentTiles(currentState, interaction.customId.split('_').pop() * 1);
           }
 
           if (currentState.board.filter((tile) => !tile.bird && tile.state == 'hidden').length == 0) {
@@ -220,7 +220,7 @@ module.exports = {
             name: !gameState.over && tile.state == "hidden" ? "⬛" : tile.emoji,
           },
           style: tileStyles[tile.state],
-          customId: `play_birdsweeper-${i}`,
+          customId: `play_birdsweeper_${i}`,
           disabled: gameState.over ? true : disabled
         }));
       }

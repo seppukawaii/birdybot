@@ -55,7 +55,7 @@ module.exports = {
   },
   play: function(interaction, currentState) {
     return new Promise((resolve, reject) => {
-      var clicked = currentState.board[interaction.customId.split('-').pop()];
+      var clicked = currentState.board[interaction.customId.split('_').pop()];
 
       if (clicked.state == "hidden") {
         var selected = currentState.board.find((tile) => tile.state == "active");
@@ -106,7 +106,7 @@ module.exports = {
             name: tile.state == "hidden" ? "🟦" : tile.emoji,
           },
           style: tileStyles[tile.state],
-          customId: `play_memory-${i}`,
+          customId: `play_memory_${i}`,
           disabled: gameState.over ? true : disabled
         }));
       }

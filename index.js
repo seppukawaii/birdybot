@@ -23,7 +23,7 @@ async function processInteraction(interaction) {
 
       interaction.noUpdate = interaction.type == 'MODAL_SUBMIT' || (tmp.length > 1 ? tmp.pop() == 'MODAL' : false);
 
-	    tmp = tmp[0].split('_');
+      tmp = tmp[0].split('_');
       interaction.commandName = tmp.shift();
       interaction.customId = tmp.join('_');
 
