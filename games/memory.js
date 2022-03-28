@@ -19,7 +19,7 @@ const birdMoji = [
 ];
 
 module.exports = {
-	name: 'Memory',
+  name: 'Memory',
   process: function(interaction, currentState) {
     return new Promise((resolve, reject) => {
       if (currentState) {
@@ -89,6 +89,7 @@ module.exports = {
   },
   print: function(interaction, gameState, disabled = false) {
     return new Promise((resolve, reject) => {
+      var content = '<:memory:957737335901020192>   **Memory**\r\n\r\n';
       var components = [];
       gameState.over = gameState.board.filter((tile) => tile.state == "hidden").length == 0;
 
@@ -103,7 +104,7 @@ module.exports = {
         actionRow.addComponents(new MessageButton({
           type: 2,
           emoji: {
-            name: tile.state == "hidden" ? "🟦" : tile.emoji,
+            name: tile.state == "hidden" ? '⬛' : tile.emoji,
           },
           style: tileStyles[tile.state],
           customId: `play_memory_${i}`,
@@ -112,7 +113,7 @@ module.exports = {
       }
 
       interaction.editReply({
-        content: gameState.over ? "You found all the birdies!" : "Birdy, birdy, where's the birdy?  Find the birdy and its mate!",
+        content: content + (gameState.over ? "You found all the birdies!" : "Birdy, birdy, where's the birdy?  Find the birdy and its mate!"),
         components: components
       }).then(() => {
         resolve();

@@ -78,7 +78,7 @@ module.exports = {
   },
   print: function(interaction, gameState, disabled = false) {
     return new Promise((resolve, reject) => {
-      var content = '**🔠 Bordle 🔠**\r\n\r\n';
+      var content = '<:bordle:957736643807281192>   **Bordle**\r\n\r\n';
       var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
       if (interaction.type == 'MODAL_SUBMIT') {

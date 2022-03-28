@@ -5,26 +5,29 @@ module.exports = async function(interaction) {
   const egg = interaction.customId;
 
   if (egg == 'selectVariant') {
-    interaction.editReply({
-      content: interaction.message.content,
-      embeds: interaction.message.embeds.map((embed) => {
-        embed.description = embed.description ? embed.description.split("\r\n") : [];
-        embed.description[0] = interaction.message.components[0].components[0].options.find((option) => option.value == interaction.values[0]).label;
-        embed.description = embed.description.join("\r\n");
+    API.call('variant', 'GET', {
+      id: interaction.values[0]
+    }).then((variant) => {
+      interaction.editReply({
+        content: interaction.message.content,
+        embeds: interaction.message.embeds.map((embed) => {
+          embed.description = embed.description ? embed.description.split("\r\n") : [];
+          embed.description[0] = interaction.message.components[0].components[0].options.find((option) => option.value == interaction.values[0]).label;
+          embed.description = embed.description.join("\r\n");
+          embed.image.url = variant.image;
 
-        embed.image.url = embed.image.url.replace(/([^\.\/]+\.[a-z]+)$/i, interaction.values[0]);
+          return embed;
+        }),
+        components: interaction.message.components.map((actionRow) => {
+          actionRow.components = actionRow.components.map((component) => {
+            component.disabled = false;
 
-        return embed;
-      }),
-      components: interaction.message.components.map((actionRow) => {
-        actionRow.components = actionRow.components.map((component) => {
-          component.disabled = false;
+            return component;
+          });
 
-          return component;
-        });
-
-        return actionRow;
-      })
+          return actionRow;
+        })
+      });
     });
   } else {
     API.call('hatch', 'POST', {
@@ -60,9 +63,9 @@ module.exports = async function(interaction) {
             options: bird.variants.map((variant) => {
               return {
                 label: (variant.label + (variant.label && variant.subspecies ? ' - ' : '') + (variant.subspecies ? `${variant.subspecies} subspecies` : '')) + ' ',
-                value: variant.id + '.' + variant.filetype,
+                value: variant.id,
                 description: '© ' + variant.credit,
-		      default: bird.variants[0] == variant.id, 
+                default: bird.variants[0] == variant.id,
                 emoji: variant.hatched ? {
                   name: "✅"
                 } : null
@@ -100,7 +103,7 @@ module.exports = async function(interaction) {
         content: `You hatched the ${egg} egg to discover the **${bird.commonName}** inside!  Do you want to keep it or release it into the wild?`,
         embeds: [{
           title: bird.commonName,
-          url: `https://squawkoverflow.com/birdypedia/bird/${bird.code}`,
+          url: `https://squawkoverflow.com/birdypedia/bird/${bird.id_slug}`,
           description: details.join("\r\n"),
           image: {
             url: bird.variants[0].image

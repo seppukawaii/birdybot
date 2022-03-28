@@ -65,7 +65,7 @@ module.exports = async function(message) {
         embeds.push({
           title: illustration.bird.commonName,
           description: illustration.label || " ",
-          url: `https://squawkoverflow.com/birdypedia/bird/${illustration.bird.code}`,
+          url: `https://squawkoverflow.com/birdypedia/bird/${illustration.bird.id_slug}`,
           thumbnail: {
             url: illustration.image
           }

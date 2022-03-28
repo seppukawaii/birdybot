@@ -41,7 +41,7 @@ client.on('ready', () => {
                   content: require('../data/webhooks.json').release.sort(() => .5 - Math.random())[0],
                   embeds: [{
                     title: birdypet.bird.commonName,
-                    url: `https://squawkoverflow.com/birdypedia/bird/${birdypet.bird.code}`,
+                    url: `https://squawkoverflow.com/birdypedia/bird/${birdypet.bird.id_slug}`,
                     description: birdypet.label,
                     image: {
                       url: birdypet.image + '#' + birdypet.freebird

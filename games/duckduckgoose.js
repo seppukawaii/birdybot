@@ -8,10 +8,29 @@ const {
   WebhookClient
 } = require('discord.js');
 
-const tileStyles = {
-  open: 2,
-  victory: 3
+const emoji = {
+  empty: {
+    name: '⬛'
+  },
+  duck: {
+    name: '🦆'
+  },
+  goose: {
+    id: '898367758964777020',
+    name: 'goose'
+  }
 };
+
+const threes = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [6, 4, 2]
+];
 
 module.exports = {
   process: function(interaction, currentState) {
@@ -29,110 +48,96 @@ module.exports = {
   },
   setup: function(interaction) {
     return new Promise((resolve, reject) => {
-      var board = Array(22).fill({
-        state: 'open',
-        
-      });
+      var board = Array(9).fill('empty');
 
       resolve({
-        message: "Duck duck goose!",
+        message: "Try to get all your ducks in a row before the geese do!",
         board: board
       });
     });
   },
   play: function(interaction, currentState) {
     return new Promise(async (resolve, reject) => {
-      var clicked = currentState.board[interaction.customId.split('-').pop()];
+      var clicked = interaction.customId.split('_').pop();
 
-      if (clicked.state == "hidden") {
-        if (clicked.bird) {
-          if (currentState.board.filter((tile) => tile.state == 'revealed').length == 0) {
-            currentSate = await this.setup(interaction);
+      if (currentState.board[clicked] == 'empty') {
+        currentState.board[clicked] = 'duck';
 
-            this.play(interaction, currentState);
-          } else {
-            currentState.message = "Oh no!  You spooked the bird away!  Better luck next time...";
-            clicked.state = 'oops';
-          }
-        } else {
-          clicked.state = 'revealed';
+        this.checkForVictory(currentState);
 
-          if (clicked.touches == 0) {
-            this.revealAdjacentTiles(currentState, interaction.customId.split('-').pop() * 1);
-          }
+        if (!currentState.over) {
+          await this.birdyPlay(currentState);
 
-          if (currentState.board.filter((tile) => !tile.bird && tile.state == 'hidden').length == 0) {
-            currentState.message = "Hurray!  You safely captured all the escaped birds!";
-          }
+          this.checkForVictory(currentState);
         }
       }
 
       return resolve(currentState);
     });
   },
-  revealAdjacentTiles: function(currentState, i) {
-    let tile = currentState.board[i];
+  checkForVictory: function(currentState) {
+    for (let three of threes) {
+      let states = currentState.board.filter((val, i) => three.includes(i));
 
-    let dirs = {
-      north: i > 4,
-      south: i < 20,
-      east: (i + 1) % 5 != 0,
-      west: i % 5 != 0
-    };
+      if (states.filter((val) => val == 'duck').length == 3 || states.filter((val) => val == 'goose').length == 3) {
+        currentState.over = true;
+        currentState.winner = currentState.board[three[0]];
+        currentState.message = currentState.winner == 'duck' ? '<a:duckparty:864788796616343552> The duck wins!' : '<a:GooseDance:657000218092634113>  The goose wins!';
 
-    if (dirs.north) {
-      this.revealTile(currentState, i - 5);
-
-      if (dirs.east) {
-        this.revealTile(currentState, i - 4);
-      }
-
-      if (dirs.west) {
-        this.revealTile(currentState, i - 6);
+        break;
       }
     }
 
-    if (dirs.south) {
-      this.revealTile(currentState, i + 5);
-
-      if (dirs.east) {
-        this.revealTile(currentState, i + 6);
-      }
-
-      if (dirs.west) {
-        this.revealTile(currentState, i + 4);
-      }
-    }
-
-    if (dirs.east) {
-      this.revealTile(currentState, i + 1);
-    }
-
-    if (dirs.west) {
-      this.revealTile(currentState, i - 1);
-    }
+    return true;
   },
+  birdyPlay: function(currentState) {
+    var possiblePlays = [];
 
-  revealTile: function(currentState, i) {
-    if (currentState.board[i]) {
-      if (currentState.board[i].state == 'hidden') {
-        currentState.board[i].state = 'revealed';
+    for (let three of threes) {
+      let states = currentState.board.filter((val, i) => three.includes(i));
+      let ducks = states.filter((val) => val == 'duck').length;
+      let geese = states.filter((val) => val == 'goose').length;
 
-        if (currentState.board[i].touches == 0) {
-          this.revealAdjacentTiles(currentState, i);
+      for (let i of three) {
+        if (currentState.board[i] == 'empty') {
+          var score = possiblePlays[i] ? possiblePlays[i].score : 0;
+
+          if (geese == 2) {
+            score += 4;
+          } else if (ducks == 1) {
+            score -= 2;
+          } else if (ducks == 2) {
+            score += 3;
+          }
+
+          possiblePlays[i] = {
+            index: i,
+            score: score
+          };
         }
       }
-    } else {
-      console.log('cannot reveal', i);
     }
+
+    if (possiblePlays.length > 0) {
+      possiblePlays = possiblePlays.filter((val) => val !== null && typeof val !== 'undefined').sort((a, b) => b.score - a.score);
+
+      currentState.board[possiblePlays[0].index] = 'goose';
+    }
+
+    return true;
   },
   print: function(interaction, gameState, disabled = false) {
     return new Promise((resolve, reject) => {
+      var content = '<:duckduckgoose:957738031895433216>   **Duck Duck Goose**\r\n\r\n';
       var components = [];
-      gameState.over = gameState.board.find((tile) => tile.state == "oops") || gameState.board.filter((tile) => !tile.bird && tile.state == 'hidden').length == 0;
+
+      if (gameState.board.filter((val) => val == 'empty').length == 0) {
+        gameState.over = true;
+        gameState.message = "<a:duckanger:864790260176257035>   It's a tie!  <a:m_goose_honk:871817507151970356>"
+      }
 
       for (var i = 0, len = gameState.board.length; i < len; i++) {
-        if (i % 5 == 0) {
+        if (i % 3 == 0) {
           components.push(new MessageActionRow());
         }
 
@@ -141,17 +146,15 @@ module.exports = {
 
         actionRow.addComponents(new MessageButton({
           type: 2,
-          emoji: {
-            name: !gameState.over && tile.state == "hidden" ? "⬛" : tile.emoji,
-          },
-          style: tileStyles[tile.state],
-          customId: `play_birdsweeper-${i}`,
+          emoji: emoji[tile],
+          style: 2,
+          customId: `play_duckduckgoose_${i}`,
           disabled: gameState.over ? true : disabled
         }));
       }
 
       interaction.editReply({
-        content: gameState.message,
+        content: content + gameState.message,
         components: components
       }).then(() => {
         resolve();

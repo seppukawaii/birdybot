@@ -76,7 +76,7 @@ module.exports = function(interaction) {
                               embeds: [
                                 new MessageEmbed()
                                 .setTitle(`+${friendship} Friendship` + (birdyBuddy.friendship >= 100 ? '(MAX)' : ''))
-                                .setDescription(birdyBuddy.friendshipMeter + ' ')
+                                .setDescription('`' + birdyBuddy.friendshipMeter + '`')
                                 .setURL(`https://squawkoverflow.com/birdypet/${birdyBuddy.id}`)
                               ]
                             }).then(() => {
@@ -128,25 +128,43 @@ module.exports = function(interaction) {
       id: "memory",
       label: "Memory",
       emoji: {
-        name: '💭'
+        id: '957737335901020192',
+        name: 'memory'
       }
     }, {
       id: "whatthebird",
       label: "What the BIRD?!",
       emoji: {
-        name: '⁉️'
+        id: '957735766249852938',
+        name: 'whatthebird'
       }
     }, {
       id: "birdsweeper",
       label: "Birdsweeper",
       emoji: {
-        name: '🔍'
+        id: '957739334759481344',
+        name: 'birdsweeper'
       }
     }, {
       id: 'bordle',
       label: 'Bordle',
       emoji: {
-        name: '🔠'
+        id: '957736643807281192',
+        name: 'bordle'
+      }
+    }, {
+      id: 'duckduckgoose',
+      label: 'Duck Duck Goose',
+      emoji: {
+        id: '957738031895433216',
+        name: 'duckduckgoose'
+      }
+    }, {
+      id: "treeclimber",
+      label: "Treeclimber",
+      emoji: {
+        id: '957815723873427506',
+        name: 'treeclimber'
       }
     }];
 

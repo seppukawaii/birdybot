@@ -114,6 +114,7 @@ module.exports = {
   },
   print: function(interaction, gameState, disabled = false) {
     return new Promise((resolve, reject) => {
+      var content = "<:whatthebird:957735766249852938>   **What the Bird?!**\r\n\r\n";
       var components = [];
       var rows = ["order", "family"];
 
@@ -142,7 +143,7 @@ module.exports = {
       if (gameState.over) {
         opengraph(`https://ebird.org/species/${gameState.bird.code}`, (err, meta) => {
           interaction.editReply({
-            content: `You guessed correctly!`,
+            content: content + `You guessed correctly!`,
             components: components,
             embeds: [{
               title: gameState.bird.commonName,
@@ -164,7 +165,7 @@ module.exports = {
         });
       } else {
         interaction.editReply({
-          content: gameState.over ? "You guessed correctly!" : `Can you guess the \`${gameState.round}\` of the bird in this photo?`,
+          content: content + (gameState.over ? "You guessed correctly!" : `Can you guess the \`${gameState.round}\` of the bird in this photo?`),
           embeds: [{
             image: {
               url: gameState.photo

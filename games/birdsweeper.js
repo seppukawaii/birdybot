@@ -32,7 +32,7 @@ const birdMoji = [
 ];
 
 module.exports = {
-	name: 'Birdsweeper',
+  name: 'Birdsweeper',
   process: function(interaction, currentState) {
     return new Promise((resolve, reject) => {
       if (currentState) {
@@ -203,6 +203,7 @@ module.exports = {
   },
   print: function(interaction, gameState, disabled = false) {
     return new Promise((resolve, reject) => {
+      var content = '<:birdsweeper:957739334759481344>   **Birdsweeper**\r\n\r\n';
       var components = [];
       gameState.over = gameState.board.find((tile) => tile.state == "oops") || gameState.board.filter((tile) => !tile.bird && tile.state == 'hidden').length == 0;
 
@@ -226,7 +227,7 @@ module.exports = {
       }
 
       interaction.editReply({
-        content: gameState.message,
+        content: content + gameState.message,
         components: components
       }).then(() => {
         resolve();
