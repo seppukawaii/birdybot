@@ -74,5 +74,16 @@
       "possessive": "xsierz",
       "reflexive": "xsiezself"
     }
+  },
+  "res": {
+    "label": "res/rem",
+    "pronouny": "https://pronouny.xyz/pronouns/624ce2c653e9200013ecbdf0",
+    "cases": {
+      "subject": "res",
+      "object": "rem",
+      "determiner": "rei",
+      "possessive": "rei's",
+      "reflexive": "remself"
+    }
   }
 }

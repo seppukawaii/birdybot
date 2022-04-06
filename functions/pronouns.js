@@ -12,9 +12,9 @@ module.exports = async function(interaction) {
   var memberId = interaction.options?.getSubcommand() == 'check' ? interaction.options.getUser('user').id : (interaction.member?.id || interaction.user.id);
 
   API.call('member', 'GET', {
-    id: memberId,
-    createIfNotExists: {
-	    pronouns: {}
+    id: {
+      auth: 'discord',
+      token: memberId
     }
   }).then((member) => {
     if (interaction.options?.getSubcommand() == 'check') {
@@ -30,10 +30,10 @@ module.exports = async function(interaction) {
         ephemeral: true
       });
     } else {
-      var action = interaction.customId ? interaction.customId.split('-').shift() : "list";
+      var action = interaction.customId ? interaction.customId.split('_').shift() : "list";
 
       if (action == "toggle") {
-        var pronoun = interaction.customId.split('-').pop();
+        var pronoun = interaction.customId.split('_').pop();
 
         var previousState = member.pronouns[pronoun] || "neutral";
         var newState = 'yes';
@@ -51,10 +51,12 @@ module.exports = async function(interaction) {
 
         member.pronouns[pronoun] = newState;
 
+	      console.log(member.pronouns);
+
         API.call('member', 'PUT', {
-		loggedInUser: { auth : 'discord', token : memberId },
-          createIfNotExists: {
-		  pronouns : {}
+          loggedInUser: {
+            auth: 'discord',
+            token: memberId
           },
           pronouns: JSON.stringify(member.pronouns)
         });
@@ -79,7 +81,7 @@ module.exports = async function(interaction) {
           type: 2,
           style: 2,
           label: pronouns[pronoun].label,
-          customId: `pronouns_toggle-${pronoun}`,
+          customId: `pronouns_toggle_${pronoun}`,
           emoji: {
             name: preferences[member.pronouns[pronoun]] || preferences["neutral"]
           }

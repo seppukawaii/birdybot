@@ -11,7 +11,10 @@ module.exports = async function(interaction) {
   var memberId = interaction.targetId;
 
   API.call('/member', 'GET', {
-    id: memberId
+    id: {
+      auth: 'discord',
+      token: memberId
+    }
   }).then((member) => {
     var preferredPronouns = Object.keys(pronouns).map((pronoun) => {
       var icon = preferences[member.pronouns[pronoun]] || preferences['neutral'];

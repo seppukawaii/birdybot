@@ -63,77 +63,98 @@ module.exports = {
       if (currentState.board[clicked] == 'empty') {
         currentState.board[clicked] = 'duck';
 
-        this.checkForVictory(currentState);
+        var birdyMove = this.minimax(currentState.board);
 
-        if (!currentState.over) {
-          await this.birdyPlay(currentState);
-
-          this.checkForVictory(currentState);
+        if (birdyMove.index >= 0) {
+          currentState.board[birdyMove.index] = 'goose';
         }
       }
 
       return resolve(currentState);
     });
   },
-  checkForVictory: function(currentState) {
+  checkForVictory: function(board) {
+    if (board.filter((val) => val == "empty").length == 0) {
+      return "tie";
+    }
+
     for (let three of threes) {
-      let states = currentState.board.filter((val, i) => three.includes(i));
+      let states = board.filter((val, i) => three.includes(i));
 
       if (states.filter((val) => val == 'duck').length == 3 || states.filter((val) => val == 'goose').length == 3) {
-        currentState.over = true;
-        currentState.winner = currentState.board[three[0]];
-        currentState.message = currentState.winner == 'duck' ? '<a:duckparty:864788796616343552> The duck wins!' : '<a:GooseDance:657000218092634113>  The goose wins!';
-
-        break;
+        return board[three[0]];
       }
     }
 
     return true;
   },
-  birdyPlay: function(currentState) {
-    var possiblePlays = [];
+  minimax: function(board, isMax = false) {
+    var winner = this.checkForVictory(board);
 
-    for (let three of threes) {
-      let states = currentState.board.filter((val, i) => three.includes(i));
-      let ducks = states.filter((val) => val == 'duck').length;
-      let geese = states.filter((val) => val == 'goose').length;
+    if (winner == "duck") {
+      return {
+        index: -1,
+        score: 1
+      };
+    } else if (winner == "goose") {
+      return {
+        index: -1,
+        score: -1
+      };
+    } else if (winner == "tie") {
+      return {
+        index: -1,
+        score: 0
+      };
+    } else {
+      var best = {
+        index: -1,
+        score: isMax ? -Infinity : Infinity
+      };
 
-      for (let i of three) {
-        if (currentState.board[i] == 'empty') {
-          var score = possiblePlays[i] ? possiblePlays[i].score : 0;
+      for (let i = 0; i < 9; i++) {
+        if (board[i] != "empty") {
+          continue;
+        }
 
-          if (geese == 2) {
-            score += 4;
-          } else if (ducks == 1) {
-            score -= 2;
-          } else if (ducks == 2) {
-            score += 3;
-          }
+        board[i] = isMax ? "duck" : "goose";
+        var score = this.minimax(board, !isMax).score;
+        board[i] = "empty";
 
-          possiblePlays[i] = {
+        if (isMax && score > best.score) {
+          best = {
+            index: i,
+            score: score
+          };
+        } else if (!isMax && score < best.score) {
+          best = {
             index: i,
             score: score
           };
         }
       }
+
+      return best;
     }
-
-    if (possiblePlays.length > 0) {
-      possiblePlays = possiblePlays.filter((val) => val !== null && typeof val !== 'undefined').sort((a, b) => b.score - a.score);
-
-      currentState.board[possiblePlays[0].index] = 'goose';
-    }
-
-    return true;
   },
   print: function(interaction, gameState, disabled = false) {
     return new Promise((resolve, reject) => {
       var content = '<:duckduckgoose:957738031895433216>   **Duck Duck Goose**\r\n\r\n';
       var components = [];
 
-      if (gameState.board.filter((val) => val == 'empty').length == 0) {
-        gameState.over = true;
-        gameState.message = "<a:duckanger:864790260176257035>   It's a tie!  <a:m_goose_honk:871817507151970356>"
+      switch (this.checkForVictory(gameState.board)) {
+        case "duck":
+          gameState.over = true;
+          gameState.message = '<a:duckparty:864788796616343552> The duck wins!';
+          break;
+        case "goose":
+          gameState.over = true;
+          gameState.message = '<a:GooseDance:657000218092634113>  The goose wins!';
+          break;
+        case "tie":
+          gameState.over = true;
+          gameState.message = "<a:duckanger:864790260176257035>  It's a tie!  <a:m_goose_honk:871817507151970356>"
+          break;
       }
 
       for (var i = 0, len = gameState.board.length; i < len; i++) {
