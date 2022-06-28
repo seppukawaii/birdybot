@@ -22,7 +22,8 @@ module.exports = async function(message) {
 
     API.call('bug', 'PUT', {
       members: members,
-      bugs: value ? value : 1
+      bugs: value ? value : 1,
+	    awardBadge : true
     });
 
     members = members.map((member) => `<@${member.token}>`);

@@ -16,7 +16,7 @@ const rest = new REST({
 
 const headers = {
   headers: {
-    "Authorization": `Bot ${secrets.DISCORD.BOT_TOKEN}`
+    "Authorization": `Bearer ${process.argv[2]}`
   }
 };
 
@@ -42,7 +42,7 @@ try {
       let cmd = commands.find((cmd) => cmd.name == command.name);
 
       if (cmd.permissions) {
-        var res = await axios.put(`https://discord.com/api/v8/applications/${secrets.DISCORD.APPLICATION_ID}/guilds/${secrets.DISCORD.GUILD_ID}/commands/${command.id}/permissions`, {
+        var res = await axios.put(`https://discord.com/api/v9/applications/${secrets.DISCORD.APPLICATION_ID}/guilds/${secrets.DISCORD.GUILD_ID}/commands/${command.id}/permissions`, {
           permissions: cmd.permissions
         }, headers);
       }
@@ -51,5 +51,5 @@ try {
 
   console.log('Successfully reloaded server commands.');
 } catch (error) {
-  console.error(error);
+  console.error(error.toJSON());
 }

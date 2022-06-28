@@ -29,7 +29,7 @@ module.exports = async function(interaction) {
     const trello = new Trello(Secrets.TRELLO.KEY, Secrets.TRELLO.TOKEN);
     var report = interaction.getTextInputValue('bug');
 
-	      await interaction.deferReply({
+    await interaction.deferReply({
       ephemeral: true
     })
 
@@ -74,7 +74,8 @@ module.exports = async function(interaction) {
             auth: 'discord',
             token: interaction.user.id
           }],
-          bugs: 1
+          bugs: 1,
+          awardBadge: true
         });
 
         interaction.editReply({

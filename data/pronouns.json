@@ -85,5 +85,27 @@
       "possessive": "rei's",
       "reflexive": "remself"
     }
+  },
+  "ne": {
+    "label": "ne/nem",
+    "pronouny": "https://pronouny.xyz/pronouns/593c1626975dfa1000d4ec9b",
+    "cases": {
+      "subject": "ne",
+      "object": "nem",
+      "determiner": "nir",
+      "possessive": "nirs",
+      "reflexive": "nemself"
+    }
+  },
+  "star": {
+    "label": "star/stars",
+    "pronouny": "https://pronouny.xyz/pronouns/5dd039d39afb87001581f952",
+    "cases": {
+      "subject": "star",
+      "object": "star",
+      "determiner": "stars",
+      "possessive": "stars",
+      "reflexive": "starself"
+    }
   }
 }

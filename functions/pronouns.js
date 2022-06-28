@@ -51,14 +51,14 @@ module.exports = async function(interaction) {
 
         member.pronouns[pronoun] = newState;
 
-	      console.log(member.pronouns);
+	delete member.pronouns["toggle"];
 
         API.call('member', 'PUT', {
           loggedInUser: {
             auth: 'discord',
             token: memberId
           },
-          pronouns: JSON.stringify(member.pronouns)
+          pronouns: member.pronouns
         });
       }
 

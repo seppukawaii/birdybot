@@ -26,7 +26,7 @@
       }]
     }, {
       "name": "gift",
-      "description": "Send a uesr a gift",
+      "description": "Send a user a gift",
       "type": 1,
       "options": [{
         "name": "user",
@@ -275,11 +275,11 @@
   {
     "name": "test",
     "description": "test",
-    "default_permission": false,
-    "permissions": [{
-      "id": "121294882861088771",
-      "type": 2,
-      "permission": true
+    "options" : [{
+	    "name": "image",
+	    "description" : "the image",
+	    "type" : 11,
+	    "required" : true
     }],
     "doNotAck": true,
     "global": false

@@ -1,34 +1,28 @@
-const {
-  GoogleAuth
-} = require('google-auth-library');
-
-const auth = new GoogleAuth();
+const axios = require('axios');
 
 exports.call = (endpoint, method = "GET", data = {}) => {
   return new Promise(async (resolve, reject) => {
-    const apiPath = 'https://us-central1-squawkoverflow.cloudfunctions.net/api';
-    const client = await auth.getIdTokenClient(apiPath);
-    const url = `${apiPath}/${endpoint}`;
+    const url = `https://squawkoverflow.com/api/${endpoint}`;
 
     const options = {
       url,
-      method: method,
+      method
     };
 
-    for (let key in data) {
-      data[key] = JSON.stringify(data[key]);
-    }
-
     if (method == "GET") {
-      options.params = data;
+      options.data = data;
     } else {
       options.data = data;
     }
 
-    client.request(options).then((response) => {
-      resolve(response.data);
+	  console.log(options);
+
+    axios(options).then((response) => {
+	    console.log(response);
+      resolve(body);
     }).catch((err) => {
-      reject(err);
+	    console.log(err);
+	    resolve(err);
     });
   });
 }

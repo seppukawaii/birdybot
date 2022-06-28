@@ -1,57 +1,54 @@
 module.exports = async function(interaction) {
   const commands = require('../data/commands.json');
-  const groups = {};
-
-  await interaction.editReply({
-    content: "Here are the commands you can use:",
-    ephemeral: true
-  });
+  const groups = new Set();
+  const paramPrefix = "\r\n   - ";
+  var content = "Pick a category to see the available commands.";
 
   for (let command of commands) {
-    let group = command.help ? command.help.group : "Miscellaneous";
-    let paramPrefix = "\r\n    - ";
-    let text = `# \/${command.name}\r\n  * `;
-
-    if (command.help) {
-      if (Array.isArray(command.help.description)) {
-        text += command.help.description.join(paramPrefix);
-      } else {
-        text += command.help.description;
-      }
-    } else {
-      text += command.description;
-    }
-
-    if (!groups[group]) {
-      groups[group] = [];
-    }
-
-    groups[group].push(text);
+    groups.add(command.help ? command.help.group : "Miscellaneous");
   }
 
+  if (interaction.isMessageComponent()) {
+    const group = interaction.values[0];
+    content = "```markdown\r\n";
+    content += group + "\r\n";
+    content += "=".repeat(group.length) + "\r\n\r\n";
 
-  for (let group in groups) {
-    let output = "```markdown\r\n";
-    output += group + "\r\n";
-    output += "=".repeat(group.length) + "\r\n\r\n";
+    for (let command of commands) {
+      if (command.help?.group == group || (!command.help && group == "Miscellaneous")) {
+        content += `# \/${command.name}`;
 
-    output += groups[group].join("\r\n\r\n");
-
-    output += "\r\n```";
-
-    await Promise.all([
-      interaction.followUp({
-        content: output,
-        ephemeral: true
-      }, (err) => {
-        if (err) {
-          console.log(err);
+        if (command.help) {
+          content += "\r\n * ";
+          if (Array.isArray(command.help.description)) {
+            content += command.help.description.join(paramPrefix);
+          } else {
+            content += command.help.description;
+          }
         }
-        return true;
-      }),
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 1000);
-      })
-    ]);
+
+        content += "\r\n\r\n";
+      }
+    }
+
+      content += "```";
   }
+
+  await interaction.editReply({
+    content: content,
+    components: [{
+      type: 1,
+      components: [{
+        type: 3,
+        custom_id: "help_group",
+        options: [...groups].sort((a, b) => a.localeCompare(b)).map((group) => {
+          return {
+            label: group,
+            value: group
+          }
+        })
+      }]
+    }],
+    ephemeral: true
+  });
 };

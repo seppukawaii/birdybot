@@ -51,10 +51,11 @@ module.exports = async function(interaction) {
                 }
               });
 
-              await API.call('_egg', 'POST', {
+              await API.call('egg', 'POST', {
                 adjective: adjective,
                 id: emoji.id,
-                member: member ? member.id : interaction.user.id
+                member: member ? member.id : interaction.user.id,
+		      KNOCKKNOCK: secrets.KNOCKKNOCK
               }).then((count) => {
                 prct = Math.max(prct, (count.art / count.total * 100));
               });

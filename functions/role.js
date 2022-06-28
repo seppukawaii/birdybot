@@ -65,8 +65,8 @@ module.exports = async function(interaction) {
     }
 
     if (customRole) {
-      role.setName(data.name);
-      role.setColor(data.color);
+      customRole.setName(data.name);
+      customRole.setColor(data.color);
 
       interaction.editReply({
         content: "Your role has been updated!",
@@ -77,8 +77,9 @@ module.exports = async function(interaction) {
     } else {
       interaction.guild.roles.create({
         name: data.name,
-        color: data.value,
+        color: data.color,
         hoist: true,
+	      position: 5,
         permissions: [Permissions.FLAGS.VIEW_CHANNEL]
       }).then((role) => {
         interaction.member.roles.add(role).then(() => {

@@ -1,5 +1,6 @@
 const API = require('../helpers/api.js');
 const Jimp = require('jimp');
+const secrets = require('../secrets.json');
 
 const {
   MessageEmbed,
@@ -45,12 +46,13 @@ module.exports = function(interaction) {
           if (gameState.over) {
             var friendship = Math.round(Math.random() * (5 - 1) + 1);
 
-            API.call('_birdybuddy', 'POST', {
+            API.call('birdybuddy', 'POST', {
               loggedInUser: {
                 auth: 'discord',
                 token: user
               },
               friendship: friendship,
+		 KNOCKKNOCK: secrets.KNOCKKNOCK
             }).then((birdyBuddy) => {
               if (birdyBuddy) {
                 if (interaction.member || interaction.reply?.member) {
@@ -81,7 +83,9 @@ module.exports = function(interaction) {
                               ]
                             }).then(() => {
                               webhook.delete();
-                            });
+                            }).catch((err) => {
+				    console.log(err);
+			    });
                           });
                         });
                     });

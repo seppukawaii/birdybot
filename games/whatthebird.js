@@ -27,30 +27,12 @@ module.exports = {
   setup: function(interaction) {
     return new Promise((resolve, reject) => {
       API.call('bird', 'GET').then(async (bird) => {
-        var orders = await API.call('orders', 'GET').then((results) => {
-          results = results.map((result) => result.name).sort(() => Math.random() - 0.5).slice(0, 5);
-
-          if (!results.includes(bird.order)) {
-            results[0] = bird.order;
-          }
-
-          return results.sort(() => Math.random() - 0.5);
-        });
-
-        var families = await API.call('families', 'GET').then((results) => {
-          results = results.map((result) => result.name).sort(() => Math.random() - 0.5).slice(0, 5);
-
-          if (!results.includes(bird.family)) {
-            results[0] = bird.family;
-          }
-
-          return results.sort(() => Math.random() - 0.5);
-        });
+        bird.code = bird.code.split('-').shift();
 
         axios({
-          url: `https://search.macaulaylibrary.org/catalog?taxonCode=${bird.code}&mediaType=p&sort=rating_rank_desc`
-        }).then((response) => {
-          let photos = response.data.results.content;
+          url: `https://search.macaulaylibrary.org/api/v1/search?taxonCode=${bird.code.split('-').shift()}&mediaType=p&sort=rating_rank_desc`
+        }).then(async (response) => {
+          var photos = response.data.results.content;
 
           if (photos.length <= 10) {
             return resolve(this.setup(interaction));
@@ -58,9 +40,29 @@ module.exports = {
 
           photos.sort(() => Math.random() - 0.5);
 
+          var orders = await API.call('orders', 'GET').then((results) => {
+            results = results.map((result) => result.name).sort(() => Math.random() - 0.5).slice(0, 5);
+
+            if (!results.includes(bird.order)) {
+              results[0] = bird.order;
+            }
+
+            return results.sort(() => Math.random() - 0.5);
+          });
+
+          var families = await API.call('families', 'GET').then((results) => {
+            results = results.map((result) => result.name).sort(() => Math.random() - 0.5).slice(0, 5);
+
+            if (!results.includes(bird.family)) {
+              results[0] = bird.family;
+            }
+
+            return results.sort(() => Math.random() - 0.5);
+          });
+
           resolve({
             bird: bird,
-            photo: photos[0].mediaUrl,
+            photo: `https://cdn.download.ams.birds.cornell.edu/api/v1/asset/${photos[0].assetId}/1200`,
             order: orders.map((order) => {
               return {
                 label: order,

@@ -65,7 +65,7 @@ module.exports = function(interaction) {
     .catch((err) => {
       if (err.response) {
         interaction.editReply({
-          content: `*You have ${err.response.data.timeUntil} minutes before you can hatch another egg.*`
+          content: `*You have ${Math.round(err.response.data.timeUntil)} minutes before you can hatch another egg.*`
         });
       } else {
         console.log(err);

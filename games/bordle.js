@@ -108,8 +108,6 @@ module.exports = {
 
             alphabet = alphabet.filter((a) => a != letter);
 
-            console.log(letter, gameState.word[i]);
-
             if (letter == gameState.word[i]) {
               letters[i].style = 3;
             } else if (gameState.word.includes(letter)) {

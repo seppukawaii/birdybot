@@ -74,10 +74,6 @@ module.exports = {
     });
   },
   checkForVictory: function(board) {
-    if (board.filter((val) => val == "empty").length == 0) {
-      return "tie";
-    }
-
     for (let three of threes) {
       let states = board.filter((val, i) => three.includes(i));
 
@@ -86,6 +82,9 @@ module.exports = {
       }
     }
 
+	  if (board.filter((val) => val == "empty").length == 0) {
+		        return "tie";
+		      }
     return true;
   },
   minimax: function(board, isMax = false) {
